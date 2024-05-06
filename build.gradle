@@ -1,0 +1,88 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+group = 'io.github.schmolldechse'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
+
+    maven {
+        url = "https://repo.codemc.org/repository/maven-public/"
+    }
+
+    maven {
+        url = "https://repo.mattstudios.me/artfiactory/public/"
+    }
+}
+
+dependencies {
+    compileOnly "io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT"
+
+    implementation "com.google.inject:guice:5.0.1"
+    implementation "aopalliance:aopalliance:1.0"
+
+    compileOnly "dev.jorel:commandapi-bukkit-core:9.4.0"
+    implementation "dev.jorel:commandapi-bukkit-shade:9.4.0"
+
+    // https://mvnrepository.com/artifact/org.reflections/reflections
+    implementation group: 'org.reflections', name: 'reflections', version: '0.9.12'
+    implementation 'org.javassist:javassist:3.27.0-GA'
+
+    implementation 'dev.triumphteam:triumph-gui:3.1.7'
+}
+
+shadowJar {
+    archiveClassifier.set('')
+    configurations = [project.configurations.runtimeClasspath]
+
+    dependencies {
+        include dependency("dev.jorel:commandapi-bukkit-shade:9.4.0")
+        include dependency("com.google.inject:guice:5.0.1")
+        include dependency("aopalliance:aopalliance:1.0")
+        include dependency("org.reflections:reflections:0.9.12")
+        include dependency('org.javassist:javassist')
+        include dependency('dev.triumphteam:triumph-gui:3.1.7')
+    }
+
+    relocate("dev.jorel.commandapi", "io.github.schmolldechse.commandapi")
+    relocate("org.reflections", "io.github.schmolldechse.reflections")
+    relocate("dev.triumphteam.gui", "io.github.schmolldechse.gui")
+}
+
+def targetJavaVersion = 17
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release.set(targetJavaVersion)
+    }
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
