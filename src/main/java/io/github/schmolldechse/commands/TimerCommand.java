@@ -51,6 +51,7 @@ public class TimerCommand {
                         .then(new GreedyStringArgument("time")
                                 .executesPlayer((sender, args) -> {
                                     String time = (String) args.get("time");
+                                    if (time == null) return;
 
                                     this.timerHandler.update((int) convert(time));
                                     if (this.timerHandler.isPaused()) this.timerHandler.start();
