@@ -3,6 +3,7 @@ package io.github.schmolldechse.challenge;
 import io.github.schmolldechse.timer.TimerHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -40,6 +41,19 @@ public abstract class Challenge implements Listener {
         this.challengeHandler = challengeHandler;
     }
 
+    protected void success() {
+        if (this.timerHandler.isPaused()) return;
+
+        this.timerHandler.pause();
+
+        Duration duration = Duration.ofSeconds(this.timerHandler.time);
+        String timeFormatted = this.timerHandler.formatWholeDuration(duration);
+
+        Bukkit.broadcast(Component.text("Die Challenge wurde geschafft", NamedTextColor.GREEN));
+        Bukkit.broadcast(Component.empty());
+        Bukkit.broadcast(Component.text("Zeit: ", NamedTextColor.GREEN).append(Component.text(timeFormatted).decoration(TextDecoration.ITALIC, true)));
+    }
+
     protected void fail() {
         if (this.timerHandler.isPaused()) return;
 
@@ -52,9 +66,9 @@ public abstract class Challenge implements Listener {
         Duration duration = Duration.ofSeconds(this.timerHandler.time);
         String timeFormatted = this.timerHandler.formatWholeDuration(duration);
 
-        Bukkit.broadcast(Component.text("Die Challenge ist fehlgeschlagen!", NamedTextColor.RED));
+        Bukkit.broadcast(Component.text("Die Challenge ist fehlgeschlagen", NamedTextColor.RED));
         Bukkit.broadcast(Component.empty());
-        Bukkit.broadcast(Component.text("So lange hat die Challenge gehalten: ", NamedTextColor.RED).append(Component.text(timeFormatted, NamedTextColor.YELLOW)));
+        Bukkit.broadcast(Component.text("Zeit: ", NamedTextColor.RED).append(Component.text(timeFormatted).decoration(TextDecoration.ITALIC, true)));
     }
 
     public boolean isActive() {

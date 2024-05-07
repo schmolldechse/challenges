@@ -10,8 +10,10 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.EnderDragon;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,8 +31,9 @@ public class AllDieChallenge extends Challenge {
                 "c_alldie",
                 Arrays.asList(
                         Component.empty(),
-                        Component.text("Die Challenge endet, sobald einer stirbt", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
-                        Component.text("- ", NamedTextColor.DARK_GRAY).append(Component.text("kein Zeitlimit", NamedTextColor.YELLOW)).decoration(TextDecoration.ITALIC, false)),
+                        Component.text("Ziel:", NamedTextColor.WHITE).append(Component.text("Enderdrachen besiegen", NamedTextColor.YELLOW)).decoration(TextDecoration.ITALIC, false),
+                        Component.text("Sollte ein Spieler sterben, gilt die Challenge als fehlgeschlagen:", NamedTextColor.WHITE)
+                ),
                 timerHandler,
                 challengeHandler
         );
@@ -47,5 +50,15 @@ public class AllDieChallenge extends Challenge {
 
         Bukkit.broadcast(Component.text(event.getPlayer().getName(), NamedTextColor.GREEN).append(Component.text(" ist gestorben!", NamedTextColor.RED)));
         this.fail();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void execute(EntityDeathEvent event) {
+        if (!this.active) return;
+        if (this.timerHandler.isPaused()) return;
+
+        if (!(event.getEntity() instanceof EnderDragon)) return;
+
+        this.success();
     }
 }
