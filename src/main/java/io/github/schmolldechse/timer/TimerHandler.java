@@ -89,4 +89,21 @@ public class TimerHandler {
             return String.format("%02d", seconds);
         }
     }
+
+    public String formatWholeDuration(Duration duration) {
+        long days = duration.toDaysPart();
+        long hours = duration.toHoursPart();
+        long minutes = duration.toMinutesPart();
+        long seconds = duration.toSecondsPart();
+
+        if (days > 0) {
+            return String.format("%dd Tage, %02d Stunden, %02d Minuten und %02d Sekunden", days, hours, minutes, seconds);
+        } else if (hours > 0) {
+            return String.format("%02d Stunden, %02d Minuten und %02d Sekunden", hours, minutes, seconds);
+        } else if (minutes > 0) {
+            return String.format("%02d Minuten und %02d Sekunden", minutes, seconds);
+        } else {
+            return String.format("%02d Sekunden", seconds);
+        }
+    }
 }

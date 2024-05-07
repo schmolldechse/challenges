@@ -2,11 +2,13 @@ package io.github.schmolldechse.challenge;
 
 import io.github.schmolldechse.timer.TimerHandler;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.Listener;
 
+import java.time.Duration;
 import java.util.List;
 
 public abstract class Challenge implements Listener {
@@ -46,6 +48,13 @@ public abstract class Challenge implements Listener {
             player.setHealth(0.0D);
             player.setGameMode(GameMode.SPECTATOR);
         });
+
+        Duration duration = Duration.ofSeconds(this.timerHandler.time);
+        String timeFormatted = this.timerHandler.formatWholeDuration(duration);
+
+        Bukkit.broadcast(Component.text("Die Challenge ist fehlgeschlagen!", NamedTextColor.RED));
+        Bukkit.broadcast(Component.empty());
+        Bukkit.broadcast(Component.text("So lange hat die Challenge gehalten: ", NamedTextColor.RED).append(Component.text(timeFormatted, NamedTextColor.YELLOW)));
     }
 
     public boolean isActive() {

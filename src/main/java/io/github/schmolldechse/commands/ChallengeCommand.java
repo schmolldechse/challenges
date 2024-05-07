@@ -16,7 +16,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class SetupCommand {
+public class ChallengeCommand {
 
     // /setup
 
@@ -27,14 +27,14 @@ public class SetupCommand {
 
     private final PaginatedGui gui;
 
-    public SetupCommand(TimerHandler timerHandler, ChallengeHandler challengeHandler) {
+    public ChallengeCommand(TimerHandler timerHandler, ChallengeHandler challengeHandler) {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
 
         this.timerHandler = timerHandler;
         this.challengeHandler = challengeHandler;
 
         this.gui = Gui.paginated()
-                .title(Component.text("Setup"))
+                .title(Component.text("Challenges"))
                 .rows(6)
                 .pageSize(45)
                 .disableAllInteractions()
@@ -65,7 +65,7 @@ public class SetupCommand {
     }
 
     public void registerCommand() {
-        new CommandTree("setup")
+        new CommandTree("challenge")
                 .withPermission(CommandPermission.OP)
                 .executesPlayer((sender, args) -> {
                     this.updateGuiItems();

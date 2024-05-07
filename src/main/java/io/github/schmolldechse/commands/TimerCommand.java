@@ -4,9 +4,11 @@ import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.CommandTree;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
+import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.timer.TimerHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.Duration;
 
@@ -16,9 +18,11 @@ public class TimerCommand {
     // /timer resume
     // /timer time <time>
 
+    private final Plugin plugin;
     private final TimerHandler timerHandler;
 
     public TimerCommand(TimerHandler timerHandler) {
+        this.plugin = JavaPlugin.getPlugin(Plugin.class);
         this.timerHandler = timerHandler;
     }
 
@@ -32,6 +36,7 @@ public class TimerCommand {
                                 return;
                             }
                             this.timerHandler.pause();
+                            this.plugin.MOVEMENT_ALLOWED = false;
                         }))
                 .then(new LiteralArgument("resume")
                         .executes((sender, args) -> {
@@ -40,6 +45,7 @@ public class TimerCommand {
                                 return;
                             }
                             this.timerHandler.start();
+                            this.plugin.MOVEMENT_ALLOWED = true;
                         }))
                 .then(new LiteralArgument("time")
                         .then(new GreedyStringArgument("time")
