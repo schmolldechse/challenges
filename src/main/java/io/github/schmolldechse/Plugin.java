@@ -39,7 +39,7 @@ public final class Plugin extends JavaPlugin {
         Injector injector = Guice.createInjector(new PluginModule());
         injector.injectMembers(this);
 
-        new TimerCommand(this.timerHandler).registerCommand();
+        new TimerCommand(this.timerHandler, this.challengeHandler).registerCommand();
         new ChallengeCommand(this.timerHandler, this.challengeHandler).registerCommand();
         new ResetCommand(this.worldHandler).registerCommand();
 

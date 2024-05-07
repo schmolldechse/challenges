@@ -5,6 +5,8 @@ import dev.jorel.commandapi.CommandTree;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import io.github.schmolldechse.Plugin;
+import io.github.schmolldechse.challenge.Challenge;
+import io.github.schmolldechse.challenge.ChallengeHandler;
 import io.github.schmolldechse.timer.TimerHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -20,10 +22,12 @@ public class TimerCommand {
 
     private final Plugin plugin;
     private final TimerHandler timerHandler;
+    private final ChallengeHandler challengeHandler;
 
-    public TimerCommand(TimerHandler timerHandler) {
+    public TimerCommand(TimerHandler timerHandler, ChallengeHandler challengeHandler) {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
         this.timerHandler = timerHandler;
+        this.challengeHandler = challengeHandler;
     }
 
     public void registerCommand() {
@@ -44,6 +48,16 @@ public class TimerCommand {
                                 sender.sendMessage(Component.text("(!) Timer already running", NamedTextColor.RED));
                                 return;
                             }
+
+                            boolean check = this.challengeHandler.registeredChallenges
+                                    .values()
+                                    .stream()
+                                    .noneMatch(Challenge::isActive);
+                            if (check) {
+                                sender.sendMessage(Component.text("(!) No challenge is selected", NamedTextColor.RED));
+                                return;
+                            }
+
                             this.timerHandler.start();
                             this.plugin.MOVEMENT_ALLOWED = true;
                         }))
