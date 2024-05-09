@@ -1,6 +1,5 @@
 package io.github.schmolldechse.commands;
 
-import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.CommandTree;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
@@ -32,7 +31,6 @@ public class TimerCommand {
 
     public void registerCommand() {
         new CommandTree("timer")
-                .withPermission(CommandPermission.OP)
                 .then(new LiteralArgument("pause")
                         .executes((sender, args) -> {
                             if (this.timerHandler.isPaused()) {

@@ -66,7 +66,6 @@ public class ChallengeCommand {
 
     public void registerCommand() {
         new CommandTree("challenge")
-                .withPermission(CommandPermission.OP)
                 .executesPlayer((sender, args) -> {
                     this.updateGuiItems();
                     this.gui.open(sender);

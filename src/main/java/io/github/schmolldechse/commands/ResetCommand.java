@@ -1,6 +1,5 @@
 package io.github.schmolldechse.commands;
 
-import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.CommandTree;
 import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.world.WorldHandler;
@@ -22,9 +21,8 @@ public class ResetCommand {
 
     public void registerCommand() {
         new CommandTree("reset")
-                .withPermission(CommandPermission.OP)
-                .executesPlayer((sender, args) -> {
-                    this.worldHandler.prepare();
+                .executes((sender, args) -> {
+                    this.prepare();
                 })
                 .register();
     }
