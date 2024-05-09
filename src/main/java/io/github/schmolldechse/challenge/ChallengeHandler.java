@@ -51,6 +51,11 @@ public class ChallengeHandler {
 
     public void toggle(String identifier) {
         if (this.plugin == null) throw new IllegalStateException("Plugin is not initialized");
-        this.getChallenge(identifier).active = !this.getChallenge(identifier).active;
+
+        this.registeredChallenges.entrySet().stream()
+                .filter(entry -> !entry.getKey().equals(identifier))
+                .forEach(entry -> entry.getValue().active = false);
+
+        this.getChallenge(identifier).active = true;
     }
 }

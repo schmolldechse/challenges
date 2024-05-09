@@ -40,6 +40,11 @@ dependencies {
     implementation 'org.javassist:javassist:3.27.0-GA'
 
     implementation 'dev.triumphteam:triumph-gui:3.1.7'
+
+    implementation 'commons-io:commons-io:2.16.1'
+
+    // https://mvnrepository.com/artifact/org.json/json
+    implementation group: 'org.json', name: 'json', version: '20240303'
 }
 
 shadowJar {
@@ -53,6 +58,7 @@ shadowJar {
         include dependency("org.reflections:reflections:0.9.12")
         include dependency('org.javassist:javassist')
         include dependency('dev.triumphteam:triumph-gui:3.1.7')
+        include dependency('org.json:json:20240303')
     }
 
     relocate("dev.jorel.commandapi", "io.github.schmolldechse.commandapi")

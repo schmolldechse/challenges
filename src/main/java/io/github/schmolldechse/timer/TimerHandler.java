@@ -34,7 +34,7 @@ public class TimerHandler {
 
             @NotNull Component display = miniMessage.deserialize("<gradient:#707CF4:#F658CF:" + offset + "><b>" + (isPaused() ? "Timer pausiert" : timeFormatted));
             Bukkit.getOnlinePlayers().forEach(player -> player.sendActionBar(display));
-        }, 0, 50, TimeUnit.MILLISECONDS);
+        }, 0, 50, TimeUnit.MILLISECONDS); // 2s animation
     }
 
     public void start() {

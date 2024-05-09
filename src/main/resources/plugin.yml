@@ -2,3 +2,4 @@ name: Challengeplugin
 version: '${version}'
 main: io.github.schmolldechse.Plugin
 api-version: '1.20'
+load: STARTUP
