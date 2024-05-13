@@ -27,10 +27,10 @@ import java.util.List;
 public final class Plugin extends JavaPlugin {
 
     @Inject
-    private TimerHandler timerHandler;
+    public TimerHandler timerHandler;
 
     @Inject
-    private ChallengeHandler challengeHandler;
+    public ChallengeHandler challengeHandler;
 
     public boolean MOVEMENT_ALLOWED = true;
     public String RESET_TYPE = "RESTART";
@@ -66,6 +66,7 @@ public final class Plugin extends JavaPlugin {
         CommandAPI.onDisable();
 
         if (this.timerHandler != null) this.timerHandler.shutdown();
+        if (this.challengeHandler != null) this.challengeHandler.deactivate();
 
         this.purgeWorlds(false);
     }

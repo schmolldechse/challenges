@@ -1,6 +1,5 @@
 package io.github.schmolldechse.commands;
 
-import dev.jorel.commandapi.CommandPermission;
 import dev.jorel.commandapi.CommandTree;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
@@ -77,14 +76,7 @@ public class ChallengeCommand {
         this.gui.clearPageItems();
 
         this.challengeHandler.registeredChallenges.forEach((identifier, challenge) -> {
-            ItemBuilder itemBuilder = ItemBuilder.from(challenge.getMaterial())
-                    .name(challenge.getDisplayName())
-                    .lore(challenge.getDescription())
-                    .pdc(persistentDataContainer -> {
-                        NamespacedKey key = new NamespacedKey(this.plugin, "identifier");
-                        persistentDataContainer.set(key, PersistentDataType.STRING, identifier);
-                    });
-
+            ItemBuilder itemBuilder = ItemBuilder.from(challenge.getItemStack());
             if (challenge.isActive()) itemBuilder.glow(challenge.isActive());
 
             this.gui.addItem(itemBuilder.asGuiItem());

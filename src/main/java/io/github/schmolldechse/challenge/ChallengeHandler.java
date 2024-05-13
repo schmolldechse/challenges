@@ -14,9 +14,8 @@ public class ChallengeHandler {
 
     public final Map<String, Challenge> registeredChallenges = new HashMap<>();
 
-    private final TimerHandler timerHandler;
-
     private final Plugin plugin;
+    private final TimerHandler timerHandler;
 
     @Inject
     public ChallengeHandler(TimerHandler timerHandler) {
@@ -42,7 +41,7 @@ public class ChallengeHandler {
             }
         }
 
-        this.plugin.getLogger().info("Registered " + this.registeredChallenges.size() + " challenge" + (this.registeredChallenges.size() > 1 ? "1" : ""));
+        this.plugin.getLogger().info("Registered " + this.registeredChallenges.size() + " challenge" + (this.registeredChallenges.size() > 1 ? "s" : ""));
     }
 
     public Challenge getChallenge(String identifier) {
@@ -53,9 +52,21 @@ public class ChallengeHandler {
         if (this.plugin == null) throw new IllegalStateException("Plugin is not initialized");
 
         this.registeredChallenges.entrySet().stream()
-                .filter(entry -> !entry.getKey().equals(identifier))
-                .forEach(entry -> entry.getValue().active = false);
+                .filter(entry -> entry.getValue().isActive() && !entry.getKey().equals(identifier))
+                .forEach(entry -> {
+                    entry.getValue().active = false;
+                    entry.getValue().onDeactivate();
+                });
 
-        this.getChallenge(identifier).active = true;
+        this.getChallenge(identifier).toggle();
+    }
+
+    public void deactivate() {
+        this.registeredChallenges.entrySet().stream()
+                .filter(entry -> entry.getValue().isActive())
+                .forEach(entry -> {
+                    entry.getValue().active = false;
+                    entry.getValue().onDeactivate();
+                });
     }
 }

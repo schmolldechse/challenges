@@ -1,41 +1,44 @@
 package io.github.schmolldechse.challenge;
 
+import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.timer.TimerHandler;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.Duration;
 import java.util.List;
 
 public abstract class Challenge implements Listener {
 
-    private final Material material;
-    private final Component displayName;
+    public abstract ItemStack getItemStack();
+    public abstract Component getDisplayName();
+    public abstract List<Component> getDescription();
+
     private final String identifierName;
-    private final List<Component> description;
 
     protected boolean active = false;
 
     protected final TimerHandler timerHandler;
     protected final ChallengeHandler challengeHandler;
 
+    private Plugin plugin;
+
     public Challenge(
-            Material material,
-            Component displayName,
             String identifierName,
-            List<Component> description,
             TimerHandler timerHandler,
             ChallengeHandler challengeHandler
     ) {
-        this.material = material;
-        this.displayName = displayName;
+        this.plugin = JavaPlugin.getPlugin(Plugin.class);
+
         this.identifierName = identifierName;
-        this.description = description;
 
         this.timerHandler = timerHandler;
         this.challengeHandler = challengeHandler;
@@ -71,23 +74,48 @@ public abstract class Challenge implements Listener {
         Bukkit.broadcast(Component.text("Zeit: ", NamedTextColor.RED).append(Component.text(timeFormatted).decoration(TextDecoration.ITALIC, true)));
     }
 
+    public void toggle() {
+        if (this.challengeHandler == null) throw new IllegalStateException("ChallengeHandler is not initialized");
+
+        this.active = !this.active;
+
+        if (this.active) this.onActivate();
+        else this.onDeactivate();
+
+        String displayNameSerialized = PlainTextComponentSerializer.plainText().serialize(this.getDisplayName());
+        Component descriptionComponent = this.getDisplayName();
+
+        for (Component line : this.getDescription()) {
+            descriptionComponent = descriptionComponent.append(line).append(Component.newline());
+        }
+
+        Bukkit.broadcast(Component
+                .text(displayNameSerialized + (this.active ? " aktiviert" : " deaktiviert"), (this.active ? NamedTextColor.GREEN : NamedTextColor.RED))
+                .hoverEvent(HoverEvent.showText(descriptionComponent))
+        );
+    }
+
+    public void onActivate() {
+        this.plugin.getLogger().info(this.identifierName + " activated");
+    }
+
+    public void onDeactivate() {
+        this.plugin.getLogger().info(this.identifierName + " deactivated");
+    }
+
+    public void onPause() {
+        this.plugin.getLogger().info(this.identifierName + " paused due to timer being paused");
+    }
+
+    public void onResume() {
+        this.plugin.getLogger().info(this.identifierName + " resumed due to timer being resumed");
+    }
+
     public boolean isActive() {
         return active;
     }
 
-    public Material getMaterial() {
-        return material;
-    }
-
-    public Component getDisplayName() {
-        return displayName;
-    }
-
     public String getIdentifierName() {
         return identifierName;
-    }
-
-    public List<Component> getDescription() {
-        return description;
     }
 }

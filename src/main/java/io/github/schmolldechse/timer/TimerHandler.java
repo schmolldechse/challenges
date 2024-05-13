@@ -1,8 +1,10 @@
 package io.github.schmolldechse.timer;
 
+import io.github.schmolldechse.Plugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
@@ -23,7 +25,11 @@ public class TimerHandler {
 
     private double offset = 0.0D;
 
+    private final Plugin plugin;
+
     public TimerHandler() {
+        this.plugin = JavaPlugin.getPlugin(Plugin.class);
+
         this.actionbarService = Executors.newSingleThreadScheduledExecutor();
         this.actionbarService.scheduleAtFixedRate(() -> {
             offset += 0.05D;
@@ -42,18 +48,24 @@ public class TimerHandler {
 
         this.isStarted = true;
 
+        this.plugin.challengeHandler.registeredChallenges.entrySet().stream()
+                .filter(entry -> entry.getValue().isActive())
+                .forEach(entry -> entry.getValue().onResume());
+
         this.timerService = Executors.newSingleThreadScheduledExecutor();
         this.timerService.scheduleAtFixedRate(() -> {
-            if (this.time <= 0 && this.reverse) {
-                this.timerService.shutdownNow();
-                this.isStarted = false;
-            } else this.time += this.reverse ? -1 : +1;
+            if (this.time <= 0 && this.reverse) this.pause();
+            else this.time += this.reverse ? -1 : +1;
         }, 0, 1, TimeUnit.SECONDS);
     }
 
     public void pause() {
         this.timerService.shutdownNow();
         this.isStarted = false;
+
+        this.plugin.challengeHandler.registeredChallenges.entrySet().stream()
+                .filter(entry -> entry.getValue().isActive())
+                .forEach(entry -> entry.getValue().onPause());
     }
 
     public boolean isPaused() {
