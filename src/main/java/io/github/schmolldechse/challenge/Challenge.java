@@ -29,7 +29,7 @@ public abstract class Challenge implements Listener {
     protected final TimerHandler timerHandler;
     protected final ChallengeHandler challengeHandler;
 
-    private Plugin plugin;
+    private final Plugin plugin;
 
     public Challenge(
             String identifierName,
@@ -62,6 +62,8 @@ public abstract class Challenge implements Listener {
 
         this.timerHandler.pause();
         Bukkit.getOnlinePlayers().forEach(player -> {
+            if (player.getGameMode() != GameMode.SURVIVAL) return;
+
             player.setHealth(0.0D);
             player.setGameMode(GameMode.SPECTATOR);
         });
