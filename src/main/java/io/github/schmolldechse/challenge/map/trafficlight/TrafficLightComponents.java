@@ -1,7 +1,6 @@
 package io.github.schmolldechse.challenge.map.trafficlight;
 
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 
 public class TrafficLightComponents {
@@ -42,12 +41,4 @@ public class TrafficLightComponents {
             .append(Component.text("\uE222").font(Key.key("challenge", "trafficlight")))
             .append(this.spaceNegative1)
             .append(Component.text("\uE223").font(Key.key("challenge", "trafficlight")));
-
-    /**
-     * Sounds
-     */
-    public final Sound red = Sound.sound(Key.key("block", "note_block.didgeridoo"), Sound.Source.MUSIC, 1f, 0.2f);
-    public final Sound yellow = Sound.sound(Key.key("block", "note_block.harp"), Sound.Source.MUSIC, 1f, 0.1f);
-    public final Sound green = Sound.sound(Key.key("block", "note_block.bell"), Sound.Source.MUSIC, 1f, 0.5f);
-
 }

@@ -10,14 +10,14 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,7 +32,9 @@ public class TrafficLightChallenge extends Challenge {
     private BossBar bossBar;
 
     private final TrafficLightComponents components = new TrafficLightComponents();
-    private TrafficLightTimer trafficLightTimer = new TrafficLightTimer();
+    private TrafficLightTimer timer;
+
+    private boolean started = false;
 
     @Inject
     public TrafficLightChallenge(TimerHandler timerHandler, ChallengeHandler challengeHandler) {
@@ -85,14 +87,13 @@ public class TrafficLightChallenge extends Challenge {
 
         Bukkit.getServer().audiences().forEach(audience -> this.bossBar.addViewer(audience));
 
-        this.trafficLightTimer.bossBar = this.bossBar;
-        this.trafficLightTimer.status = TrafficLightStatus.DISABLED;
+        this.timer = new TrafficLightTimer(this.bossBar);
     }
 
     @Override
     public void onDeactivate() {
-        this.trafficLightTimer.shutdown();
-        this.trafficLightTimer.status = TrafficLightStatus.DISABLED;
+        this.timer.pause(); // shutdown timer
+        this.started = false;
 
         if (this.bossBar == null) return;
         this.bossBar.name(this.components.trafficLight);
@@ -103,13 +104,17 @@ public class TrafficLightChallenge extends Challenge {
 
     @Override
     public void onPause() {
-        this.trafficLightTimer.pause();
+        this.timer.pause();
     }
 
     @Override
     public void onResume() {
-        if (this.trafficLightTimer.status == TrafficLightStatus.DISABLED) this.trafficLightTimer.changeToGreen();
-        else this.trafficLightTimer.resume();
+        if (!this.started) {
+            this.started = true;
+            this.timer.transition();
+        }
+
+        this.timer.resume();
     }
 
     @EventHandler
@@ -128,5 +133,39 @@ public class TrafficLightChallenge extends Challenge {
         if (!(event.getEntity() instanceof EnderDragon)) return;
 
         this.success();
+        this.timer.pause();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void execute(PlayerMoveEvent event) {
+        if (!this.active) return;
+        if (this.timerHandler.isPaused()) return;
+
+        if (this.timer.status == TrafficLightStatus.RED
+                && event.getPlayer().getGameMode() != GameMode.SPECTATOR) {
+            Location from = event.getFrom();
+            Location to = event.getTo();
+
+            double x = Math.floor(from.getX());
+            double z = Math.floor(from.getZ());
+
+            if (Math.floor(to.getX()) != x || Math.floor(to.getZ()) != z) {
+                Bukkit.broadcast(Component.text(event.getPlayer().getName(), NamedTextColor.GREEN).append(Component.text(" hat die Ampel nicht beachtet", NamedTextColor.RED)));
+                this.fail();
+                this.timer.pause();
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void execute(PlayerDeathEvent event) {
+        if (!this.active) return;
+        event.deathMessage(null);
+
+        if (this.timerHandler.isPaused()) return;
+
+        Bukkit.broadcast(Component.text(event.getPlayer().getName(), NamedTextColor.GREEN).append(Component.text(" ist gestorben!", NamedTextColor.RED)));
+        this.fail();
+        this.timer.pause();
     }
 }
