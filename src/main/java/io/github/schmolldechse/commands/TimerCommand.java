@@ -66,7 +66,7 @@ public class TimerCommand {
                                     if (time == null) return;
 
                                     this.timerHandler.update((int) convert(time));
-                                    if (this.timerHandler.isPaused()) this.timerHandler.start();
+                                    // if (this.timerHandler.isPaused()) this.timerHandler.start();
                                 })))
                 .register();
     }
