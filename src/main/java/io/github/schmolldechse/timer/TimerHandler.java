@@ -1,5 +1,6 @@
 package io.github.schmolldechse.timer;
 
+import com.google.inject.Inject;
 import io.github.schmolldechse.Plugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -15,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 public class TimerHandler {
 
     public int time;
-    private boolean reverse;
-    private boolean isStarted = false;
+    public boolean reverse;
+    public boolean isStarted = false;
 
     private ScheduledExecutorService timerService;
     private final ScheduledExecutorService actionbarService;
@@ -27,6 +28,7 @@ public class TimerHandler {
 
     private final Plugin plugin;
 
+    @Inject
     public TimerHandler() {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
 
