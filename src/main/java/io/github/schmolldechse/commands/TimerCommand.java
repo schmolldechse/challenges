@@ -4,7 +4,6 @@ import dev.jorel.commandapi.CommandTree;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import io.github.schmolldechse.Plugin;
-import io.github.schmolldechse.challenge.Challenge;
 import io.github.schmolldechse.challenge.ChallengeHandler;
 import io.github.schmolldechse.timer.TimerHandler;
 import net.kyori.adventure.text.Component;
@@ -47,6 +46,7 @@ public class TimerCommand {
                                 return;
                             }
 
+                            /**
                             boolean check = this.challengeHandler.registeredChallenges
                                     .values()
                                     .stream()
@@ -55,6 +55,7 @@ public class TimerCommand {
                                 sender.sendMessage(Component.text("(!) No challenge is selected", NamedTextColor.RED));
                                 return;
                             }
+                             */
 
                             this.timerHandler.start();
                             this.plugin.MOVEMENT_ALLOWED = true;
