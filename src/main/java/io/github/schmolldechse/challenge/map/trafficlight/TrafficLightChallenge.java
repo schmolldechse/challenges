@@ -23,16 +23,21 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TrafficLightChallenge extends Challenge {
 
     private final Plugin plugin;
 
-    private BossBar bossBar;
+    public BossBar bossBar;
 
-    private final TrafficLightComponents components = new TrafficLightComponents();
+    public final TrafficLightComponents components = new TrafficLightComponents();
     private TrafficLightTimer timer;
+
+    public TrafficLightStatus status = TrafficLightStatus.DISABLED;
+    public TrafficLightStatus lastStatus = TrafficLightStatus.DISABLED;
 
     private boolean started = false;
 
@@ -79,15 +84,16 @@ public class TrafficLightChallenge extends Challenge {
     @Override
     public void onActivate() {
         this.bossBar = BossBar.bossBar(
-                this.components.trafficLight,
+                Component.empty(),
                 0,
                 BossBar.Color.WHITE,
                 BossBar.Overlay.PROGRESS
         );
 
-        Bukkit.getServer().audiences().forEach(audience -> this.bossBar.addViewer(audience));
+        this.timer = new TrafficLightTimer(this);
+        this.bossBar.name(this.components.trafficLight);
 
-        this.timer = new TrafficLightTimer(this.bossBar);
+        Bukkit.getServer().audiences().forEach(audience -> this.bossBar.addViewer(audience));
     }
 
     @Override
@@ -117,6 +123,24 @@ public class TrafficLightChallenge extends Challenge {
         this.timer.resume();
     }
 
+    @Override
+    public Map<String, Object> save() {
+        Map<String, Object> data = new HashMap<>();
+
+        data.put("started", this.started);
+        data.put("status", this.status);
+        data.put("remainingTime", this.timer.remainingTime);
+
+        return data;
+    }
+
+    @Override
+    public void append(Map<String, Object> data) {
+        this.started = (boolean) data.get("started");
+        this.status = TrafficLightStatus.valueOf((String) data.get("status"));
+        this.timer.remainingTime = ((Number) data.get("remainingTime")).longValue();
+    }
+
     @EventHandler
     public void execute(PlayerJoinEvent event) {
         if (!this.active) return;
@@ -141,7 +165,7 @@ public class TrafficLightChallenge extends Challenge {
         if (!this.active) return;
         if (this.timerHandler.isPaused()) return;
 
-        if (this.timer.status == TrafficLightStatus.RED
+        if (this.status == TrafficLightStatus.RED
                 && event.getPlayer().getGameMode() != GameMode.SPECTATOR) {
             Location from = event.getFrom();
             Location to = event.getTo();

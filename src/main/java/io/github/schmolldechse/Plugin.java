@@ -9,6 +9,7 @@ import io.github.schmolldechse.challenge.ChallengeHandler;
 import io.github.schmolldechse.commands.ResetCommand;
 import io.github.schmolldechse.commands.ChallengeCommand;
 import io.github.schmolldechse.commands.TimerCommand;
+import io.github.schmolldechse.config.save.SaveConfigHandler;
 import io.github.schmolldechse.listener.PlayerJoinListener;
 import io.github.schmolldechse.listener.PlayerMoveListener;
 import io.github.schmolldechse.listener.PlayerResourcePackStatusListener;
@@ -28,11 +29,9 @@ import java.util.List;
 
 public final class Plugin extends JavaPlugin {
 
-    @Inject
-    public TimerHandler timerHandler;
-
-    @Inject
-    public ChallengeHandler challengeHandler;
+    @Inject public TimerHandler timerHandler;
+    @Inject public ChallengeHandler challengeHandler;
+    @Inject public SaveConfigHandler saveConfigHandler;
 
     public boolean MOVEMENT_ALLOWED = true;
     public String RESET_TYPE = "RESTART";
@@ -41,6 +40,8 @@ public final class Plugin extends JavaPlugin {
     public boolean RESOURCEPACK_ENABLED;
     public String RESOURCEPACK_URL = "https://voldechse.wtf/challenges.zip";
     public String RESOURCEPACK_HASH;
+
+    public boolean RESET_EXECUTED = false;
 
     @Override
     public void onLoad() {
@@ -69,11 +70,17 @@ public final class Plugin extends JavaPlugin {
         new PlayerMoveListener(this.timerHandler);
         new PlayerJoinListener();
         new PlayerResourcePackStatusListener();
+
+        this.RESET_EXECUTED = false;
+
+        this.saveConfigHandler.readAppend();
     }
 
     @Override
     public void onDisable() {
         CommandAPI.onDisable();
+
+        if (!this.RESET_EXECUTED && this.saveConfigHandler != null) this.saveConfigHandler.save();
 
         if (this.timerHandler != null) this.timerHandler.shutdown();
         if (this.challengeHandler != null) this.challengeHandler.deactivate();

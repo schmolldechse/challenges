@@ -1,6 +1,5 @@
 package io.github.schmolldechse.challenge.map.trafficlight;
 
-import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 
@@ -10,17 +9,14 @@ import java.util.concurrent.TimeUnit;
 
 public class TrafficLightTimer {
 
+    private final TrafficLightChallenge challenge;
+
     private ScheduledExecutorService timerService;
-    private final BossBar bossBar;
 
     public long remainingTime;
 
-    public TrafficLightStatus status = TrafficLightStatus.DISABLED;
-    public TrafficLightStatus lastStatus = TrafficLightStatus.DISABLED;
-    private final TrafficLightComponents components = new TrafficLightComponents();
-
-    public TrafficLightTimer(BossBar bossBar) {
-        this.bossBar = bossBar;
+    public TrafficLightTimer(TrafficLightChallenge challenge) {
+        this.challenge = challenge;
     }
 
     public void resume() {
@@ -29,9 +25,9 @@ public class TrafficLightTimer {
         /**
          * Append last light
          */
-        if (this.lastStatus != TrafficLightStatus.DISABLED) {
-            this.status = this.lastStatus;
-            this.lastStatus = null;
+        if (this.challenge.lastStatus != TrafficLightStatus.DISABLED) {
+            this.challenge.status = this.challenge.lastStatus;
+            this.challenge.lastStatus = null;
             this.appendLight();
         }
 
@@ -47,23 +43,23 @@ public class TrafficLightTimer {
         /**
          * Set traffic light to disabled
          */
-        this.lastStatus = this.status;
-        this.status = TrafficLightStatus.DISABLED;
-        if (this.bossBar != null) this.bossBar.name(this.components.trafficLight);
+        this.challenge.lastStatus = this.challenge.status;
+        this.challenge.status = TrafficLightStatus.DISABLED;
+        if (this.challenge.bossBar != null) this.challenge.bossBar.name(this.challenge.components.trafficLight);
     }
 
     public void transition() {
-        switch (this.status) {
+        switch (this.challenge.status) {
             case GREEN: // green -> yellow
-                this.status = TrafficLightStatus.YELLOW;
+                this.challenge.status = TrafficLightStatus.YELLOW;
                 this.remainingTime = calculate(1, 4); // 1 - 4 sec
                 break;
             case YELLOW: // yellow -> red
-                this.status = TrafficLightStatus.RED;
+                this.challenge.status = TrafficLightStatus.RED;
                 this.remainingTime = 10; // 10 sec
                 break;
             case RED, DISABLED: // red -> green
-                this.status = TrafficLightStatus.GREEN;
+                this.challenge.status = TrafficLightStatus.GREEN;
                 this.remainingTime = calculate(150, 480); // 2:30 - 8 min
                 break;
         }
@@ -72,17 +68,23 @@ public class TrafficLightTimer {
     }
 
     private void appendLight() {
-        switch (this.status) {
+        switch (this.challenge.status) {
             case RED:
-                this.bossBar.name(this.components.trafficLight.append(this.components.spaceNegative251).append(this.components.redLight));
+                this.challenge.bossBar.name(
+                        this.challenge.components.trafficLight.append(this.challenge.components.spaceNegative251).append(this.challenge.components.redLight)
+                );
                 Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1f, 0.2f));
                 break;
             case YELLOW:
-                this.bossBar.name(this.components.trafficLight.append(this.components.spaceNegative251).append(this.components.yellowLight));
+                this.challenge.bossBar.name(
+                        this.challenge.components.trafficLight.append(this.challenge.components.spaceNegative251).append(this.challenge.components.yellowLight)
+                );
                 Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1f, 0.1f));
                 break;
             case GREEN:
-                this.bossBar.name(this.components.trafficLight.append(this.components.spaceNegative251).append(this.components.greenLight));
+                this.challenge.bossBar.name(
+                        this.challenge.components.trafficLight.append(this.challenge.components.spaceNegative251).append(this.challenge.components.greenLight)
+                );
                 Bukkit.getOnlinePlayers().forEach(player -> player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BELL, 1f, 0.5f));
                 break;
         }

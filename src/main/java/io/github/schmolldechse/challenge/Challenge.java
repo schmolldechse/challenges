@@ -15,12 +15,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Challenge implements Listener {
 
     public abstract ItemStack getItemStack();
     public abstract Component getDisplayName();
     public abstract List<Component> getDescription();
+
+    /**
+     * Saves challenge data which can be applied after a restart again
+     * @return Map<String, Object>
+     */
+    public abstract Map<String, Object> save();
 
     private final String identifierName;
 
@@ -97,27 +104,20 @@ public abstract class Challenge implements Listener {
         );
     }
 
-    public void onActivate() {
-        this.plugin.getLogger().info(this.identifierName + " activated");
-    }
+    public void onActivate() { }
 
-    public void onDeactivate() {
-        this.plugin.getLogger().info(this.identifierName + " deactivated");
-    }
+    public void onDeactivate() { }
 
-    public void onPause() {
-        this.plugin.getLogger().info(this.identifierName + " paused due to timer being paused");
-    }
+    public void onPause() { }
 
-    public void onResume() {
-        this.plugin.getLogger().info(this.identifierName + " resumed due to timer being resumed");
-    }
+    public void onResume() { }
 
-    public boolean isActive() {
-        return active;
-    }
+    /**
+     * Appends data to the challenge
+     */
+    public void append(Map<String, Object> data) { }
 
-    public String getIdentifierName() {
-        return identifierName;
-    }
+    public boolean isActive() { return active; }
+
+    public String getIdentifierName() { return identifierName; }
 }

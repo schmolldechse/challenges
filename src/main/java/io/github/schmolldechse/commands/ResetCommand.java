@@ -59,6 +59,8 @@ public class ResetCommand {
             this.plugin.getLogger().severe("Failed to create reset cache file");
         }
 
+        this.plugin.RESET_EXECUTED = true;
+
         switch (this.plugin.RESET_TYPE) {
             case "STOP":
                 Bukkit.shutdown();

@@ -23,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class AllDieChallenge extends Challenge {
 
@@ -64,6 +65,9 @@ public class AllDieChallenge extends Challenge {
                 Component.text("Stirbt jemand, gilt die Challenge als fehlgeschlagen", NamedTextColor.WHITE)
         );
     }
+
+    @Override
+    public Map<String, Object> save() { return Map.of(); }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void execute(PlayerDeathEvent event) {
