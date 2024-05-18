@@ -9,7 +9,9 @@ import io.github.schmolldechse.challenge.ChallengeHandler;
 import io.github.schmolldechse.commands.ResetCommand;
 import io.github.schmolldechse.commands.ChallengeCommand;
 import io.github.schmolldechse.commands.TimerCommand;
+import io.github.schmolldechse.listener.PlayerJoinListener;
 import io.github.schmolldechse.listener.PlayerMoveListener;
+import io.github.schmolldechse.listener.PlayerResourcePackStatusListener;
 import io.github.schmolldechse.timer.TimerHandler;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -35,8 +37,14 @@ public final class Plugin extends JavaPlugin {
     public boolean MOVEMENT_ALLOWED = true;
     public String RESET_TYPE = "RESTART";
 
+    // TODO: fetch hash from server defined in config
+    public boolean RESOURCEPACK_ENABLED;
+    public String RESOURCEPACK_URL = "https://voldechse.wtf/challenges.zip";
+    public String RESOURCEPACK_HASH;
+
     @Override
     public void onLoad() {
+        // TODO: CommandAPI -> Cloud v2
         CommandAPI.onLoad(new CommandAPIBukkitConfig(this).silentLogs(true));
 
         if (!this.getDataFolder().exists()) this.getDataFolder().mkdir();
@@ -59,6 +67,8 @@ public final class Plugin extends JavaPlugin {
         new ResetCommand(this.timerHandler).registerCommand();
 
         new PlayerMoveListener(this.timerHandler);
+        new PlayerJoinListener();
+        new PlayerResourcePackStatusListener();
     }
 
     @Override
@@ -91,6 +101,12 @@ public final class Plugin extends JavaPlugin {
                     this.getLogger().severe("Found invalid parameter for resetType in config.json: " + resetType);
                     break;
             }
+
+            this.RESOURCEPACK_ENABLED = jsonObject.getJSONObject("resourcepack").getBoolean("enabled");
+            if (this.RESOURCEPACK_ENABLED) {
+                this.RESOURCEPACK_URL = jsonObject.getJSONObject("resourcepack").getString("url");
+                this.RESOURCEPACK_HASH = jsonObject.getJSONObject("resourcepack").getString("hash");
+            }
         } catch (IOException e) {
             this.getLogger().severe("Failed to read config.json: " + e.getMessage());
         }
@@ -102,6 +118,13 @@ public final class Plugin extends JavaPlugin {
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("resetType", "RESTART");
+
+        JSONObject resourcePack = new JSONObject();
+        resourcePack.put("enabled", false);
+        resourcePack.put("url", "https://voldechse.wtf/challenges.zip");
+        resourcePack.put("hash", "ba14b01c69bb434e259786bdca4c14bb1c00e495");
+
+        jsonObject.put("resourcepack", resourcePack);
 
         try (FileWriter file = new FileWriter(configFile)) {
             file.write(jsonObject.toString());
