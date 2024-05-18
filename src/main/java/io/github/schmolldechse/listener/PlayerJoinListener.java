@@ -26,7 +26,7 @@ public class PlayerJoinListener implements Listener {
                 this.plugin.RESOURCEPACK_URL,
                 this.plugin.RESOURCEPACK_HASH,
                 true,
-                Component.text("Damit du alle Grafiken ordnungsgemäß sehen kannst, musst du das Resource Pack akzeptieren", NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true)
+                Component.text("Damit du alle Grafiken ordnungsgemäß sehen kannst, musst du das Resource Pack akzeptieren", NamedTextColor.RED).decoration(TextDecoration.BOLD, true)
         );
     }
 }
