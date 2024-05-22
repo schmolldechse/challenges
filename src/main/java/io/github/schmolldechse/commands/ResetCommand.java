@@ -2,7 +2,6 @@ package io.github.schmolldechse.commands;
 
 import dev.jorel.commandapi.CommandTree;
 import io.github.schmolldechse.Plugin;
-import io.github.schmolldechse.timer.TimerHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -24,12 +23,8 @@ public class ResetCommand {
 
     private final Plugin plugin;
 
-    private final TimerHandler timerHandler;
-
-    public ResetCommand(TimerHandler timerHandler) {
+    public ResetCommand() {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
-
-        this.timerHandler = timerHandler;
     }
 
     public void registerCommand() {
@@ -41,7 +36,7 @@ public class ResetCommand {
     }
 
     private void prepare() {
-        if (this.timerHandler != null && !this.timerHandler.isPaused()) this.timerHandler.pause();
+        if (this.plugin.timerHandler != null && !this.plugin.timerHandler.isPaused()) this.plugin.timerHandler.pause();
 
         Component message = Component.text("Die Welt wird zurückgesetzt", NamedTextColor.RED).decoration(TextDecoration.ITALIC, true);
         Bukkit.getOnlinePlayers().forEach(player -> player.kick(message, PlayerKickEvent.Cause.PLUGIN));

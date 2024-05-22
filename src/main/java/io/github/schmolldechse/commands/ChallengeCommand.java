@@ -5,8 +5,6 @@ import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import io.github.schmolldechse.Plugin;
-import io.github.schmolldechse.challenge.ChallengeHandler;
-import io.github.schmolldechse.timer.TimerHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -21,16 +19,10 @@ public class ChallengeCommand {
 
     private final Plugin plugin;
 
-    private final TimerHandler timerHandler;
-    private final ChallengeHandler challengeHandler;
-
     private final PaginatedGui gui;
 
-    public ChallengeCommand(TimerHandler timerHandler, ChallengeHandler challengeHandler) {
+    public ChallengeCommand() {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
-
-        this.timerHandler = timerHandler;
-        this.challengeHandler = challengeHandler;
 
         this.gui = Gui.paginated()
                 .title(Component.text("Challenges"))
@@ -46,7 +38,7 @@ public class ChallengeCommand {
             if (!event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(key)) return;
 
             String identifier = event.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING);
-            this.challengeHandler.toggle(identifier);
+            this.plugin.challengeHandler.toggle(identifier);
             this.updateGuiItems();
         });
 
@@ -75,7 +67,7 @@ public class ChallengeCommand {
     private void updateGuiItems() {
         this.gui.clearPageItems();
 
-        this.challengeHandler.registeredChallenges.forEach((identifier, challenge) -> {
+        this.plugin.challengeHandler.registeredChallenges.forEach((identifier, challenge) -> {
             ItemBuilder itemBuilder = ItemBuilder.from(challenge.getItemStack());
             if (challenge.isActive()) itemBuilder.glow(challenge.isActive());
 

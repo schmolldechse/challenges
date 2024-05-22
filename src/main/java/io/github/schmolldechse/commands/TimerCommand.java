@@ -4,8 +4,6 @@ import dev.jorel.commandapi.CommandTree;
 import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import io.github.schmolldechse.Plugin;
-import io.github.schmolldechse.challenge.ChallengeHandler;
-import io.github.schmolldechse.timer.TimerHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,29 +17,25 @@ public class TimerCommand {
     // /timer time <time>
 
     private final Plugin plugin;
-    private final TimerHandler timerHandler;
-    private final ChallengeHandler challengeHandler;
 
-    public TimerCommand(TimerHandler timerHandler, ChallengeHandler challengeHandler) {
+    public TimerCommand() {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
-        this.timerHandler = timerHandler;
-        this.challengeHandler = challengeHandler;
     }
 
     public void registerCommand() {
         new CommandTree("timer")
                 .then(new LiteralArgument("pause")
                         .executes((sender, args) -> {
-                            if (this.timerHandler.isPaused()) {
+                            if (this.plugin.timerHandler.isPaused()) {
                                 sender.sendMessage(Component.text("(!) Timer already paused", NamedTextColor.RED));
                                 return;
                             }
-                            this.timerHandler.pause();
+                            this.plugin.timerHandler.pause();
                             this.plugin.MOVEMENT_ALLOWED = false;
                         }))
                 .then(new LiteralArgument("resume")
                         .executes((sender, args) -> {
-                            if (!this.timerHandler.isPaused()) {
+                            if (!this.plugin.timerHandler.isPaused()) {
                                 sender.sendMessage(Component.text("(!) Timer already running", NamedTextColor.RED));
                                 return;
                             }
@@ -57,7 +51,7 @@ public class TimerCommand {
                             }
                              */
 
-                            this.timerHandler.start();
+                            this.plugin.timerHandler.start();
                             this.plugin.MOVEMENT_ALLOWED = true;
                         }))
                 .then(new LiteralArgument("time")
@@ -66,7 +60,7 @@ public class TimerCommand {
                                     String time = (String) args.get("time");
                                     if (time == null) return;
 
-                                    this.timerHandler.update((int) convert(time));
+                                    this.plugin.timerHandler.update((int) convert(time));
                                     // if (this.timerHandler.isPaused()) this.timerHandler.start();
                                 })))
                 .register();
