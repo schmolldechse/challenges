@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+
+    // showJar
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
@@ -21,29 +23,35 @@ repositories {
         url = "https://repo.codemc.org/repository/maven-public/"
     }
 
+    // GuiBuilder
     maven {
         url = "https://repo.mattstudios.me/artfiactory/public/"
     }
 }
 
 dependencies {
+    // PaperMC
     compileOnly "io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT"
 
+    // Inject
     implementation "com.google.inject:guice:5.0.1"
     implementation "aopalliance:aopalliance:1.0"
 
+    // CommandAPI
     compileOnly "dev.jorel:commandapi-bukkit-core:9.4.0"
     implementation "dev.jorel:commandapi-bukkit-shade:9.4.0"
 
-    // https://mvnrepository.com/artifact/org.reflections/reflections
+    // Reflections  https://mvnrepository.com/artifact/org.reflections/reflections
     implementation group: 'org.reflections', name: 'reflections', version: '0.9.12'
     implementation 'org.javassist:javassist:3.27.0-GA'
 
+    // GuiBuilder
     implementation 'dev.triumphteam:triumph-gui:3.1.7'
 
+    // Apache Commons IO
     implementation 'commons-io:commons-io:2.16.1'
 
-    // https://mvnrepository.com/artifact/org.json/json
+    // JSON  https://mvnrepository.com/artifact/org.json/json
     implementation group: 'org.json', name: 'json', version: '20240303'
 }
 
