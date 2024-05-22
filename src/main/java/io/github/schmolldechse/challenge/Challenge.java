@@ -29,6 +29,11 @@ public abstract class Challenge implements Listener {
      */
     public abstract Map<String, Object> save();
 
+    /**
+     * Appends saved challenge data
+     */
+    public void append(Map<String, Object> data) { }
+
     private final String identifierName;
 
     protected boolean active = false;
@@ -57,7 +62,7 @@ public abstract class Challenge implements Listener {
         this.timerHandler.pause();
 
         Duration duration = Duration.ofSeconds(this.timerHandler.time);
-        String timeFormatted = this.timerHandler.formatWholeDuration(duration);
+        String timeFormatted = this.timerHandler.format(duration);
 
         Bukkit.broadcast(Component.text("Die Challenge wurde geschafft", NamedTextColor.GREEN));
         Bukkit.broadcast(Component.empty());
@@ -76,7 +81,7 @@ public abstract class Challenge implements Listener {
         });
 
         Duration duration = Duration.ofSeconds(this.timerHandler.time);
-        String timeFormatted = this.timerHandler.formatWholeDuration(duration);
+        String timeFormatted = this.timerHandler.format(duration);
 
         Bukkit.broadcast(Component.text("Die Challenge ist fehlgeschlagen", NamedTextColor.RED));
         Bukkit.broadcast(Component.empty());
@@ -111,11 +116,6 @@ public abstract class Challenge implements Listener {
     public void onPause() { }
 
     public void onResume() { }
-
-    /**
-     * Appends data to the challenge
-     */
-    public void append(Map<String, Object> data) { }
 
     public boolean isActive() { return active; }
 

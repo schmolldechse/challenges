@@ -38,7 +38,7 @@ public class TimerHandler {
             if (offset > 1.0) offset -= 2.0D;
 
             Duration duration = Duration.ofSeconds(time);
-            String timeFormatted = formatDuration(duration);
+            String timeFormatted = this.format(duration);
 
             @NotNull Component display = miniMessage.deserialize("<gradient:#707CF4:#F658CF:" + offset + "><b>" + (isPaused() ? "Timer pausiert" : timeFormatted));
             Bukkit.getOnlinePlayers().forEach(player -> player.sendActionBar(display));
@@ -87,37 +87,26 @@ public class TimerHandler {
         if (this.actionbarService != null && !this.actionbarService.isShutdown()) this.actionbarService.shutdown();
     }
 
-    private String formatDuration(Duration duration) {
-        long days = duration.toDaysPart();
-        long hours = duration.toHoursPart();
-        long minutes = duration.toMinutesPart();
-        long seconds = duration.toSecondsPart();
+    public String format(Duration duration) {
+        long total = duration.toSeconds();
 
-        if (days > 0) {
-            return String.format("%dd, und %02d:%02d:%02d", days, hours, minutes, seconds);
-        } else if (hours > 0) {
-            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
-        } else if (minutes > 0) {
-            return String.format("%02d:%02d", minutes, seconds);
+        if (total < 60) {
+            return String.format("%02ds", total);
+        } else if (total / 60 < 60) {
+            long minutes = total / 60;
+            long seconds = total % 60;
+            return String.format("%02dm %02ds", minutes, seconds);
+        } else if (total / 3600 < 24) {
+            long hours = total / 3600;
+            long minutes = (total % 3600) / 60;
+            long seconds = total % 60;
+            return String.format("%02dh %02dm %02ds", hours, minutes, seconds);
         } else {
-            return String.format("%02d", seconds);
-        }
-    }
-
-    public String formatWholeDuration(Duration duration) {
-        long days = duration.toDaysPart();
-        long hours = duration.toHoursPart();
-        long minutes = duration.toMinutesPart();
-        long seconds = duration.toSecondsPart();
-
-        if (days > 0) {
-            return String.format("%dd Tage, %02d Stunden, %02d Minuten und %02d Sekunden", days, hours, minutes, seconds);
-        } else if (hours > 0) {
-            return String.format("%02d Stunden, %02d Minuten und %02d Sekunden", hours, minutes, seconds);
-        } else if (minutes > 0) {
-            return String.format("%02d Minuten und %02d Sekunden", minutes, seconds);
-        } else {
-            return String.format("%02d Sekunden", seconds);
+            long days = total / 86400;
+            long hours = (total % 86400) / 3600;
+            long minutes = (total % 3600) / 60;
+            long seconds = total % 60;
+            return String.format("%02dd %02dh %02dm %02ds", days, hours, minutes, seconds);
         }
     }
 }
