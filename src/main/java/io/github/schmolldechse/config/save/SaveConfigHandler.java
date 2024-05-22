@@ -22,7 +22,6 @@ public class SaveConfigHandler {
     private final Plugin plugin;
 
     private final File path;
-
     private final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @Inject
@@ -41,7 +40,9 @@ public class SaveConfigHandler {
             Type type = new TypeToken<Map<String, Object>>(){}.getType();
             Map<String, Object> data = this.GSON.fromJson(json, type);
 
-            Map<String, Map<String, Object>> challengeData = (Map<String, Map<String, Object>>) data.get("challenges");
+            // challenge json object
+            Type challengeType = new TypeToken<Map<String, Map<String, Object>>>(){}.getType();
+            Map<String, Map<String, Object>> challengeData = this.GSON.fromJson(this.GSON.toJson(data.get("challenges")), challengeType);
             challengeData.forEach((key, value) -> {
                 Challenge challenge = this.plugin.challengeHandler.getChallenge(key);
                 if (challenge == null) return;
@@ -50,11 +51,13 @@ public class SaveConfigHandler {
                 challenge.append(value);
             });
 
-            Map<String, Object> timerData = (Map<String, Object>) data.get("timer");
+            // timer json object
+            Type timerType = new TypeToken<Map<String, Object>>(){}.getType();
+            Map<String, Object> timerData = this.GSON.fromJson(this.GSON.toJson(data.get("timer")), timerType);
             this.plugin.timerHandler.time = ((Number) timerData.get("time")).intValue();
             this.plugin.timerHandler.reverse = (boolean) timerData.get("reverse");
 
-            this.path.delete();
+            if (!this.path.delete()) throw new IOException("Failed to delete save file");
         } catch (IOException exception) {
             throw new RuntimeException("Failed to read data", exception);
         }
@@ -63,18 +66,14 @@ public class SaveConfigHandler {
     public void save() {
         Map<String, Object> data = new HashMap<>();
 
-        /**
-         * Saving challenge data
-         */
+        // Saving challenge data
         Map<String, Map<String, Object>> challengeData = new HashMap<>();
         this.plugin.challengeHandler.registeredChallenges.entrySet().stream()
                 .filter(entry -> entry.getValue().isActive())
                 .forEach(entry -> challengeData.put(entry.getKey(), entry.getValue().save()));
         data.put("challenges", challengeData);
 
-        /**
-         * Saving timer data
-         */
+        // Saving timer data
         data.put("timer", Map.of(
                 "time", this.plugin.timerHandler.time,
                 "reverse", this.plugin.timerHandler.reverse
@@ -83,7 +82,7 @@ public class SaveConfigHandler {
         String json = this.GSON.toJson(data);
 
         try {
-            Files.write(Paths.get(this.path.toURI()), json.getBytes(StandardCharsets.UTF_8));
+            Files.writeString(Paths.get(this.path.toURI()), json);
         } catch (IOException exception) {
             throw new RuntimeException("Failed to save data", exception);
         }
