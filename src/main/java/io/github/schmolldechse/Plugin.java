@@ -63,9 +63,9 @@ public final class Plugin extends JavaPlugin {
         Injector injector = Guice.createInjector(new PluginModule());
         injector.injectMembers(this);
 
-        new TimerCommand(this.timerHandler, this.challengeHandler).registerCommand();
-        new ChallengeCommand(this.timerHandler, this.challengeHandler).registerCommand();
-        new ResetCommand(this.timerHandler).registerCommand();
+        new TimerCommand().registerCommand();
+        new ChallengeCommand().registerCommand();
+        new ResetCommand().registerCommand();
 
         new PlayerMoveListener(this.timerHandler);
         new PlayerJoinListener();
