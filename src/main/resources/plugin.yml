@@ -1,4 +1,5 @@
 name: Challengeplugin
+author: Voldechse
 version: '${version}'
 main: io.github.schmolldechse.Plugin
 api-version: '1.20'
