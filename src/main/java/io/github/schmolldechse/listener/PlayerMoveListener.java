@@ -1,7 +1,6 @@
 package io.github.schmolldechse.listener;
 
 import io.github.schmolldechse.Plugin;
-import io.github.schmolldechse.timer.TimerHandler;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,19 +12,15 @@ public class PlayerMoveListener implements Listener {
 
     private final Plugin plugin;
 
-    private final TimerHandler timerHandler;
-
-    public PlayerMoveListener(TimerHandler timerHandler) {
+    public PlayerMoveListener() {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
-
-        this.timerHandler = timerHandler;
 
         this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @EventHandler
     public void execute(PlayerMoveEvent event) {
-        if (!this.timerHandler.isPaused()) return;
+        if (!this.plugin.timerHandler.isPaused()) return;
         if (this.plugin.MOVEMENT_ALLOWED) return;
 
         Player player = event.getPlayer();

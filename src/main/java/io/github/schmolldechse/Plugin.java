@@ -77,7 +77,7 @@ public final class Plugin extends JavaPlugin {
         new SetupCommand().registerCommand();
         new ResetCommand().registerCommand();
 
-        new PlayerMoveListener(this.timerHandler);
+        new PlayerMoveListener();
         new PlayerJoinListener();
         new PlayerResourcePackStatusListener();
 
