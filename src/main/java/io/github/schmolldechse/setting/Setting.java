@@ -19,34 +19,49 @@ import java.util.Map;
 
 public abstract class Setting implements Listener {
 
+    protected final Plugin plugin;
+
+    protected boolean active = false;
+    private final String identifierName;
+
+    /**
+     * Creates a new setting
+     * @param identifierName unique identifier for the setting
+     */
+    public Setting(final String identifierName) {
+        this.plugin = JavaPlugin.getPlugin(Plugin.class);
+        this.identifierName = identifierName;
+    }
+
+    /**
+     * ItemStack representation of the setting
+     * @return ItemStack
+     */
     public abstract ItemStack getItemStack();
+
+    /**
+     * Display name of the setting
+     * @return display name as a Component
+     */
     public abstract Component getDisplayName();
+
+    /**
+     * Description of the setting
+     * @return description as a list of Components
+     */
     public abstract List<Component> getDescription();
 
     /**
-     * Saves challenge data which can be applied after a restart again
-     * @return Map<String, Object>
+     * Saves setting data which can be applied after a restart
+     * @return map of saved data
      */
     public Map<String, Object> save() { return Map.of(); }
 
     /**
-     * Appends saved challenge data
+     * Appends saved data to the setting
+     * @param data data to append
      */
     public void append(Map<String, Object> data) { }
-
-    private final String identifierName;
-
-    protected boolean active = false;
-
-    protected final Plugin plugin;
-
-    public Setting(
-            String identifierName
-    ) {
-        this.plugin = JavaPlugin.getPlugin(Plugin.class);
-
-        this.identifierName = identifierName;
-    }
 
     protected void fail() {
         if (this.plugin.timerHandler.isPaused()) return;

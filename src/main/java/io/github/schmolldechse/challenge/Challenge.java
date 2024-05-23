@@ -20,37 +20,52 @@ import java.util.Map;
 
 public abstract class Challenge implements Listener {
 
-    public abstract ItemStack getItemStack();
-    public abstract Component getDisplayName();
-    public abstract List<Component> getDescription();
-
-    /**
-     * Saves challenge data which can be applied after a restart again
-     * @return Map<String, Object>
-     */
-    public Map<String, Object> save() { return Map.of(); }
-
-    /**
-     * Appends saved challenge data
-     */
-    public void append(Map<String, Object> data) { }
-
-    private final String identifierName;
-
-    protected boolean active = false;
-
     protected final Plugin plugin;
 
-    public Challenge(
-            String identifierName
-    ) {
-        this.plugin = JavaPlugin.getPlugin(Plugin.class);
+    protected boolean active = false;
+    private final String identifierName;
 
+    /**
+     * Creates a new challenge
+     * @param identifierName unique identifier for the challenge
+     */
+    public Challenge(final String identifierName) {
+        this.plugin = JavaPlugin.getPlugin(Plugin.class);
         this.identifierName = identifierName;
     }
 
     /**
-     * Opens the settings inventory if its available
+     * ItemStack representation of the setting
+     * @return ItemStack
+     */
+    public abstract ItemStack getItemStack();
+
+    /**
+     * Display name of the setting
+     * @return display name as a Component
+     */
+    public abstract Component getDisplayName();
+
+    /**
+     * Description of the setting
+     * @return description as a list of Components
+     */
+    public abstract List<Component> getDescription();
+
+    /**
+     * Saves challenge data which can be applied after a restart
+     * @return map of saved data
+     */
+    public Map<String, Object> save() { return Map.of(); }
+
+    /**
+     * Appends saved data to the challenge
+     * @param data data to append
+     */
+    public void append(Map<String, Object> data) { }
+
+    /**
+     * Opens the inventory for the player to change the settings of a challenge
      * @param player Player to open the inventory for
      */
     public void openSettings(Player player) { }
