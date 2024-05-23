@@ -4,12 +4,10 @@ import com.google.inject.Inject;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.challenge.Challenge;
-import io.github.schmolldechse.challenge.ChallengeHandler;
-import io.github.schmolldechse.timer.TimerHandler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EnderDragon;
@@ -23,18 +21,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class AllDieChallenge extends Challenge {
 
     private final Plugin plugin;
 
     @Inject
-    public AllDieChallenge(TimerHandler timerHandler, ChallengeHandler challengeHandler) {
+    public AllDieChallenge() {
         super(
-                "c_alldie",
-                timerHandler,
-                challengeHandler
+                "c_alldie"
         );
 
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
@@ -54,7 +49,7 @@ public class AllDieChallenge extends Challenge {
 
     @Override
     public Component getDisplayName() {
-        return Component.text("Einer stirbt, Alle sterben", NamedTextColor.RED);
+        return Component.text("Einer stirbt, Alle sterben", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
     }
 
     @Override
@@ -66,24 +61,25 @@ public class AllDieChallenge extends Challenge {
         );
     }
 
-    @Override
-    public Map<String, Object> save() { return Map.of(); }
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void execute(PlayerDeathEvent event) {
         if (!this.active) return;
-        event.deathMessage(null);
+        if (this.plugin.timerHandler.isPaused()) return;
 
-        if (this.timerHandler.isPaused()) return;
+        if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) return;
 
-        Bukkit.broadcast(Component.text(event.getPlayer().getName(), NamedTextColor.GREEN).append(Component.text(" ist gestorben!", NamedTextColor.RED)));
+        event.deathMessage(
+                Component.text(event.getPlayer().getName(), NamedTextColor.GREEN)
+                        .append(Component.text(" ist gestorben!", NamedTextColor.RED))
+        );
+
         this.fail();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void execute(EntityDeathEvent event) {
         if (!this.active) return;
-        if (this.timerHandler.isPaused()) return;
+        if (this.plugin.timerHandler.isPaused()) return;
 
         if (!(event.getEntity() instanceof EnderDragon)) return;
 
