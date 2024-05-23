@@ -1,6 +1,5 @@
-package io.github.schmolldechse.commands;
+package io.github.schmolldechse.inventory;
 
-import dev.jorel.commandapi.CommandTree;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
@@ -13,19 +12,19 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class ChallengeCommand {
-
-    // /setup
+public class SettingInventory {
 
     private final Plugin plugin;
-
     private final PaginatedGui gui;
 
-    public ChallengeCommand() {
+    private final NamespacedKey key;
+
+    public SettingInventory() {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
+        this.key = new NamespacedKey(this.plugin, "identifier");
 
         this.gui = Gui.paginated()
-                .title(Component.text("Challenges"))
+                .title(Component.text("Settings", NamedTextColor.RED).decoration(TextDecoration.BOLD, true))
                 .rows(6)
                 .pageSize(45)
                 .disableAllInteractions()
@@ -33,14 +32,18 @@ public class ChallengeCommand {
 
         this.gui.setDefaultClickAction(event -> {
             if (event.getCurrentItem() == null) return;
-
-            NamespacedKey key = new NamespacedKey(this.plugin, "identifier");
             if (!event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(key)) return;
 
             String identifier = event.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING);
-            this.plugin.challengeHandler.toggle(identifier);
+            this.plugin.settingHandler.toggle(identifier);
             this.updateGuiItems();
         });
+
+        this.gui.setItem(6, 1, ItemBuilder.from(Material.MANGROVE_DOOR)
+                .name(Component.text("Zurück", NamedTextColor.RED).decoration(TextDecoration.ITALIC, true))
+                .asGuiItem((event) -> {
+                    this.plugin.setupInventory.getInventory().open(event.getWhoClicked());
+                }));
 
         this.gui.setItem(6, 3, ItemBuilder.from(Material.PAPER)
                 .name(Component.text("vorherige Seite", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, true))
@@ -53,27 +56,26 @@ public class ChallengeCommand {
                 .asGuiItem((event) -> {
                     this.gui.next();
                 }));
+
+        this.gui.setOpenGuiAction(event -> {
+            this.updateGuiItems();
+        });
     }
 
-    public void registerCommand() {
-        new CommandTree("challenge")
-                .executesPlayer((sender, args) -> {
-                    this.updateGuiItems();
-                    this.gui.open(sender);
-                })
-                .register();
-    }
-
-    private void updateGuiItems() {
+    public void updateGuiItems() {
         this.gui.clearPageItems();
 
-        this.plugin.challengeHandler.registeredChallenges.forEach((identifier, challenge) -> {
-            ItemBuilder itemBuilder = ItemBuilder.from(challenge.getItemStack());
-            if (challenge.isActive()) itemBuilder.glow(challenge.isActive());
+        this.plugin.settingHandler.registeredSettings.forEach((identifier, setting) -> {
+            ItemBuilder itemBuilder = ItemBuilder.from(setting.getItemStack());
+            if (setting.isActive()) itemBuilder.glow(setting.isActive());
 
             this.gui.addItem(itemBuilder.asGuiItem());
         });
 
         this.gui.update();
+    }
+
+    public PaginatedGui getInventory() {
+        return gui;
     }
 }

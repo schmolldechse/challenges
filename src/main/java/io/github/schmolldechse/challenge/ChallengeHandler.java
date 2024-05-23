@@ -2,9 +2,7 @@ package io.github.schmolldechse.challenge;
 
 import com.google.inject.Inject;
 import io.github.schmolldechse.Plugin;
-import io.github.schmolldechse.timer.TimerHandler;
 import io.github.schmolldechse.misc.Reflection;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
@@ -15,27 +13,23 @@ public class ChallengeHandler {
     public final Map<String, Challenge> registeredChallenges = new HashMap<>();
 
     private final Plugin plugin;
-    private final TimerHandler timerHandler;
 
     @Inject
-    public ChallengeHandler(TimerHandler timerHandler) {
+    public ChallengeHandler() {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
-        this.timerHandler = timerHandler;
 
         this.register();
     }
 
     private void register() {
-        Set<Class<? extends Challenge>> challengeClasses = Reflection.findChallengeClasses("io.github.schmolldechse.challenge.map");
+        Set<Class<? extends Challenge>> classes = Reflection.findClasses("io.github.schmolldechse.challenge.map", Challenge.class);
 
-        for (Class<? extends Challenge> challengeClass : challengeClasses) {
+        for (Class<? extends Challenge> challengeClass : classes) {
             try {
-                Constructor<? extends Challenge> constructor = challengeClass.getDeclaredConstructor(TimerHandler.class, ChallengeHandler.class);
-                Challenge challenge = constructor.newInstance(this.timerHandler, this);
+                Constructor<? extends Challenge> constructor = challengeClass.getDeclaredConstructor();
+                Challenge challenge = constructor.newInstance();
 
                 this.registeredChallenges.put(challenge.getIdentifierName(), challenge);
-
-                Bukkit.getPluginManager().registerEvents(challenge, this.plugin);
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
@@ -58,7 +52,9 @@ public class ChallengeHandler {
                     entry.getValue().onDeactivate();
                 });
 
-        this.getChallenge(identifier).toggle();
+        Challenge challenge = this.getChallenge(identifier);
+        if (challenge == null) throw new IllegalArgumentException("Challenge with identifier " + identifier + " does not exist");
+        challenge.toggle();
     }
 
     public void deactivate() {

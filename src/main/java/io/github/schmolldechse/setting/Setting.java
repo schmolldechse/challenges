@@ -1,4 +1,4 @@
-package io.github.schmolldechse.challenge;
+package io.github.schmolldechse.setting;
 
 import io.github.schmolldechse.Plugin;
 import net.kyori.adventure.text.Component;
@@ -8,7 +8,6 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -18,7 +17,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
-public abstract class Challenge implements Listener {
+public abstract class Setting implements Listener {
 
     public abstract ItemStack getItemStack();
     public abstract Component getDisplayName();
@@ -41,31 +40,12 @@ public abstract class Challenge implements Listener {
 
     protected final Plugin plugin;
 
-    public Challenge(
+    public Setting(
             String identifierName
     ) {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
 
         this.identifierName = identifierName;
-    }
-
-    /**
-     * Opens the settings inventory if its available
-     * @param player Player to open the inventory for
-     */
-    public void openSettings(Player player) { }
-
-    protected void success() {
-        if (this.plugin.timerHandler.isPaused()) return;
-
-        this.plugin.timerHandler.pause();
-
-        Duration duration = Duration.ofSeconds(this.plugin.timerHandler.time);
-        String timeFormatted = this.plugin.timerHandler.format(duration);
-
-        Bukkit.broadcast(Component.text("Die Challenge wurde geschafft", NamedTextColor.GREEN));
-        Bukkit.broadcast(Component.empty());
-        Bukkit.broadcast(Component.text("Zeit: ", NamedTextColor.GREEN).append(Component.text(timeFormatted).decoration(TextDecoration.ITALIC, true)));
     }
 
     protected void fail() {
@@ -88,7 +68,7 @@ public abstract class Challenge implements Listener {
     }
 
     public void toggle() {
-        if (this.plugin.challengeHandler == null) throw new IllegalStateException("ChallengeHandler is not initialized");
+        if (this.plugin.settingHandler == null) throw new IllegalStateException("ChallengeHandler is not initialized");
 
         this.active = !this.active;
 
@@ -119,10 +99,6 @@ public abstract class Challenge implements Listener {
     public void onDeactivate() {
         HandlerList.unregisterAll(this);
     }
-
-    public void onPause() { }
-
-    public void onResume() { }
 
     public boolean isActive() { return active; }
 

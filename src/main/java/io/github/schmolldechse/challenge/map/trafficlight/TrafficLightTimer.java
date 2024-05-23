@@ -52,15 +52,15 @@ public class TrafficLightTimer {
         switch (this.challenge.status) {
             case GREEN: // green -> yellow
                 this.challenge.status = TrafficLightStatus.YELLOW;
-                this.remainingTime = calculate(1, 4); // 1 - 4 sec
+                this.remainingTime = calculate(1, 4); // 1 - 4 sec until red light
                 break;
             case YELLOW: // yellow -> red
                 this.challenge.status = TrafficLightStatus.RED;
-                this.remainingTime = 10; // 10 sec
+                this.remainingTime = 10; // 10 sec until green light
                 break;
             case RED, DISABLED: // red -> green
                 this.challenge.status = TrafficLightStatus.GREEN;
-                this.remainingTime = calculate(150, 480); // 2:30 - 8 min
+                this.remainingTime = calculate(150, 480); // 2:30 - 8 min until yellow light
                 break;
         }
 

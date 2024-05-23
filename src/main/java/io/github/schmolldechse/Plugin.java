@@ -7,12 +7,16 @@ import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import io.github.schmolldechse.challenge.ChallengeHandler;
 import io.github.schmolldechse.commands.ResetCommand;
-import io.github.schmolldechse.commands.ChallengeCommand;
+import io.github.schmolldechse.commands.SetupCommand;
 import io.github.schmolldechse.commands.TimerCommand;
 import io.github.schmolldechse.config.save.SaveConfigHandler;
+import io.github.schmolldechse.inventory.ChallengeInventory;
+import io.github.schmolldechse.inventory.SettingInventory;
+import io.github.schmolldechse.inventory.SetupInventory;
 import io.github.schmolldechse.listener.PlayerJoinListener;
 import io.github.schmolldechse.listener.PlayerMoveListener;
 import io.github.schmolldechse.listener.PlayerResourcePackStatusListener;
+import io.github.schmolldechse.setting.SettingHandler;
 import io.github.schmolldechse.timer.TimerHandler;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -31,6 +35,7 @@ public final class Plugin extends JavaPlugin {
 
     @Inject public TimerHandler timerHandler;
     @Inject public ChallengeHandler challengeHandler;
+    @Inject public SettingHandler settingHandler;
     @Inject public SaveConfigHandler saveConfigHandler;
 
     public boolean MOVEMENT_ALLOWED = true;
@@ -42,6 +47,11 @@ public final class Plugin extends JavaPlugin {
     public String RESOURCEPACK_HASH;
 
     public boolean RESET_EXECUTED = false;
+
+    // inventories
+    public SetupInventory setupInventory;
+    public ChallengeInventory challengeInventory;
+    public SettingInventory settingInventory;
 
     @Override
     public void onLoad() {
@@ -64,12 +74,16 @@ public final class Plugin extends JavaPlugin {
         injector.injectMembers(this);
 
         new TimerCommand().registerCommand();
-        new ChallengeCommand().registerCommand();
+        new SetupCommand().registerCommand();
         new ResetCommand().registerCommand();
 
         new PlayerMoveListener(this.timerHandler);
         new PlayerJoinListener();
         new PlayerResourcePackStatusListener();
+
+        this.setupInventory = new SetupInventory();
+        this.challengeInventory = new ChallengeInventory();
+        this.settingInventory = new SettingInventory();
 
         this.RESET_EXECUTED = false;
 
@@ -84,6 +98,7 @@ public final class Plugin extends JavaPlugin {
 
         if (this.timerHandler != null) this.timerHandler.shutdown();
         if (this.challengeHandler != null) this.challengeHandler.deactivate();
+        if (this.settingHandler != null) this.settingHandler.deactivate();
 
         this.purgeWorlds(false);
     }

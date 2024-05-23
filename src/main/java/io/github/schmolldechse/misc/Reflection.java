@@ -1,6 +1,5 @@
 package io.github.schmolldechse.misc;
 
-import io.github.schmolldechse.challenge.Challenge;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ConfigurationBuilder;
@@ -9,11 +8,11 @@ import java.util.Set;
 
 public class Reflection {
 
-    public static Set<Class<? extends Challenge>> findChallengeClasses(String packageName) {
+    public static <T> Set<Class<? extends T>> findClasses(String packageName, Class<T> type) {
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .forPackages(packageName)
                 .addScanners(new SubTypesScanner(false)));
 
-        return reflections.getSubTypesOf(Challenge.class);
+        return reflections.getSubTypesOf(type);
     }
 }

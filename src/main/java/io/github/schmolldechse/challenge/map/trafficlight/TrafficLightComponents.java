@@ -21,6 +21,7 @@ public class TrafficLightComponents {
             .append(this.spaceNegative1)
             .append(Component.text("C").font(Key.key("challenge", "trafficlight")));
 
+    //TODO: fix moving elements 10px to the right when applying a color
     public final Component redLight = Component.empty()
             .append(Component.text("\uE201").font(Key.key("challenge", "trafficlight")))
             .append(this.spaceNegative1)
