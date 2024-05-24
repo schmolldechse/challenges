@@ -3,6 +3,7 @@ package io.github.schmolldechse.challenge;
 import com.google.inject.Inject;
 import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.misc.Reflection;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
@@ -30,6 +31,8 @@ public class ChallengeHandler {
                 Challenge challenge = constructor.newInstance();
 
                 this.registeredChallenges.put(challenge.getIdentifierName(), challenge);
+
+                Bukkit.getPluginManager().registerEvents(challenge, this.plugin);
             } catch (Exception exception) {
                 exception.printStackTrace();
             }

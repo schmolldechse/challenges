@@ -128,11 +128,11 @@ public abstract class Challenge implements Listener {
     }
 
     public void onActivate() {
-        Bukkit.getPluginManager().registerEvents(this, this.plugin);
+
     }
 
     public void onDeactivate() {
-        HandlerList.unregisterAll(this);
+
     }
 
     public void onPause() { }
