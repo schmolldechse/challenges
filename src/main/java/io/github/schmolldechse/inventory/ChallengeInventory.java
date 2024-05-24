@@ -41,9 +41,9 @@ public class ChallengeInventory {
             Challenge challenge = this.plugin.challengeHandler.getChallenge(identifier);
             if (challenge == null) return;
 
-            if (event.getClick() == ClickType.RIGHT) {
+            if (event.isRightClick()) {
                 challenge.openSettings((Player) event.getWhoClicked());
-            } else {
+            } else if (event.isLeftClick()) {
                 this.plugin.challengeHandler.toggle(identifier);
                 this.updateGuiItems();
             }

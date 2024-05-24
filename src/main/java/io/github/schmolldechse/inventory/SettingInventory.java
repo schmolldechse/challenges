@@ -4,11 +4,13 @@ import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.PaginatedGui;
 import io.github.schmolldechse.Plugin;
+import io.github.schmolldechse.setting.Setting;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -35,8 +37,15 @@ public class SettingInventory {
             if (!event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(key)) return;
 
             String identifier = event.getCurrentItem().getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING);
-            this.plugin.settingHandler.toggle(identifier);
-            this.updateGuiItems();
+            Setting setting = this.plugin.settingHandler.getSetting(identifier);
+            if (setting == null) return;
+
+            if (event.isRightClick()) {
+                setting.openSettings((Player) event.getWhoClicked());
+            } else if (event.isLeftClick()) {
+                this.plugin.settingHandler.toggle(identifier);
+                this.updateGuiItems();
+            }
         });
 
         this.gui.setItem(6, 1, ItemBuilder.from(Material.MANGROVE_DOOR)
