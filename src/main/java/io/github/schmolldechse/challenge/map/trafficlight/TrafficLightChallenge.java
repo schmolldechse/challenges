@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.challenge.Challenge;
-import io.github.schmolldechse.challenge.map.trafficlight.inventory.SettingsInventory;
+import io.github.schmolldechse.challenge.map.trafficlight.settings.SettingsInventory;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -35,25 +35,16 @@ public class TrafficLightChallenge extends Challenge {
 
     public final TrafficLightComponents components = new TrafficLightComponents();
     private TrafficLightTimer timer;
+    public TrafficLightStatus status;
 
-    public TrafficLightStatus status = TrafficLightStatus.DISABLED;
-    public TrafficLightStatus lastStatus = TrafficLightStatus.DISABLED;
-
-    private SettingsInventory settingsInventory;
-    public int MIN_RED_DURATION = 4, MAX_RED_DURATION = 10,
-            MIN_YELLOW_DURATION = 150, MAX_YELLOW_DURATION = 480,
-            MIN_GREEN_DURATION = 1, MAX_GREEN_DURATION = 4;
-
-    private boolean started = false;
+    private final SettingsInventory settingsInventory;
 
     @Inject
     public TrafficLightChallenge() {
-        super(
-                "c_trafficlight"
-        );
+        super("c_trafficlight");
 
-        this.settingsInventory = new SettingsInventory(this);
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
+        this.settingsInventory = new SettingsInventory(this);
     }
 
     @Override
@@ -106,11 +97,18 @@ public class TrafficLightChallenge extends Challenge {
         this.bossBar = BossBar.bossBar(
                 Component.empty(),
                 0,
-                BossBar.Color.WHITE,
+                BossBar.Color.WHITE, // white bossbar removes minecraft's bossbar layout in resource pack
                 BossBar.Overlay.PROGRESS
         );
 
+        this.status = TrafficLightStatus.GREEN;
+
         this.timer = new TrafficLightTimer(this);
+        this.timer.remainingTime = this.timer.calculate(
+                this.status.minDuration,
+                this.status.maxDuration
+        );
+
         this.bossBar.name(this.components.trafficLight);
 
         Bukkit.getServer().audiences().forEach(audience -> this.bossBar.addViewer(audience));
@@ -119,7 +117,6 @@ public class TrafficLightChallenge extends Challenge {
     @Override
     public void onDeactivate() {
         this.timer.pause(); // shutdown trafficlight timer
-        this.started = false;
 
         if (this.bossBar == null) return;
         this.bossBar.name(this.components.trafficLight);
@@ -135,11 +132,6 @@ public class TrafficLightChallenge extends Challenge {
 
     @Override
     public void onResume() {
-        if (!this.started) {
-            this.started = true;
-            this.timer.transition();
-        }
-
         this.timer.resume();
     }
 
@@ -147,7 +139,6 @@ public class TrafficLightChallenge extends Challenge {
     public Map<String, Object> save() {
         Map<String, Object> data = new HashMap<>();
 
-        data.put("started", this.started);
         data.put("status", this.status);
         data.put("remainingTime", this.timer.remainingTime);
 
@@ -156,7 +147,6 @@ public class TrafficLightChallenge extends Challenge {
 
     @Override
     public void append(Map<String, Object> data) {
-        this.started = (boolean) data.get("started");
         this.status = TrafficLightStatus.valueOf((String) data.get("status"));
         this.timer.remainingTime = ((Number) data.get("remainingTime")).longValue();
     }
