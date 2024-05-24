@@ -8,6 +8,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -62,6 +63,12 @@ public abstract class Setting implements Listener {
      * @param data data to append
      */
     public void append(Map<String, Object> data) { }
+
+    /**
+     * Opens the inventory for the player to change the settings of a challenge
+     * @param player Player to open the inventory for
+     */
+    public void openSettings(Player player) { }
 
     protected void fail() {
         if (this.plugin.timerHandler.isPaused()) return;
