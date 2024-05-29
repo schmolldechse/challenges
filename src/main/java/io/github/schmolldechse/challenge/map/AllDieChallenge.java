@@ -28,9 +28,7 @@ public class AllDieChallenge extends Challenge {
 
     @Inject
     public AllDieChallenge() {
-        super(
-                "c_alldie"
-        );
+        super("c_alldie");
 
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
     }

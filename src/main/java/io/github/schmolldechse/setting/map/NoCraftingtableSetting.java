@@ -30,9 +30,7 @@ public class NoCraftingtableSetting extends Setting {
 
     @Inject
     public NoCraftingtableSetting() {
-        super(
-                "s_nocraftingtable"
-        );
+        super("s_nocraftingtable");
 
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
     }
