@@ -40,17 +40,6 @@ public class TimerCommand {
                                 return;
                             }
 
-                            /**
-                            boolean check = this.challengeHandler.registeredChallenges
-                                    .values()
-                                    .stream()
-                                    .noneMatch(Challenge::isActive);
-                            if (check) {
-                                sender.sendMessage(Component.text("(!) No challenge is selected", NamedTextColor.RED));
-                                return;
-                            }
-                             */
-
                             this.plugin.timerHandler.start();
                             this.plugin.MOVEMENT_ALLOWED = true;
                         }))
@@ -61,7 +50,6 @@ public class TimerCommand {
                                     if (time == null) return;
 
                                     this.plugin.timerHandler.update((int) convert(time));
-                                    // if (this.timerHandler.isPaused()) this.timerHandler.start();
                                 })))
                 .register();
     }
