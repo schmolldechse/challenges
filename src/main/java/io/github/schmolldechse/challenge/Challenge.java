@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -24,6 +23,7 @@ public abstract class Challenge implements Listener {
     protected final Plugin plugin;
 
     protected boolean active = false;
+    protected final NamespacedKey key;
     private final String identifierName;
 
     /**
@@ -32,8 +32,11 @@ public abstract class Challenge implements Listener {
      */
     public Challenge(final String identifierName) {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
+        this.key = new NamespacedKey(this.plugin, "identifier");
         this.identifierName = identifierName;
     }
+
+    public abstract Identification challengeIdentification();
 
     /**
      * ItemStack representation of the setting

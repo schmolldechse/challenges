@@ -11,23 +11,22 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class ChallengeInventory {
+public class ConditionInventory {
 
     private final Plugin plugin;
     private final PaginatedGui gui;
 
     private final NamespacedKey key;
 
-    public ChallengeInventory() {
+    public ConditionInventory() {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
         this.key = new NamespacedKey(this.plugin, "identifier");
 
         this.gui = Gui.paginated()
-                .title(Component.text("Challenges", NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true))
+                .title(Component.text("Bedingungen", NamedTextColor.RED).decoration(TextDecoration.BOLD, true))
                 .rows(6)
                 .pageSize(45)
                 .disableAllInteractions()
@@ -41,12 +40,8 @@ public class ChallengeInventory {
             Challenge challenge = this.plugin.challengeHandler.getChallenge(identifier);
             if (challenge == null) return;
 
-            if (event.isRightClick()) {
-                challenge.openSettings((Player) event.getWhoClicked());
-            } else if (event.isLeftClick()) {
-                this.plugin.challengeHandler.toggle(identifier);
-                this.updateGuiItems();
-            }
+            this.plugin.challengeHandler.toggle(identifier);
+            this.updateGuiItems();
         });
 
         this.gui.setItem(6, 1, ItemBuilder.from(Material.MANGROVE_DOOR)
@@ -76,7 +71,7 @@ public class ChallengeInventory {
         this.gui.clearPageItems();
 
         this.plugin.challengeHandler.registeredChallenges.entrySet().stream()
-                .filter(entry -> entry.getValue().challengeIdentification() == Identification.CHALLENGE)
+                .filter(entry -> entry.getValue().challengeIdentification() == Identification.CONDITION)
                 .forEach(entry -> {
                     Challenge challenge = entry.getValue();
 

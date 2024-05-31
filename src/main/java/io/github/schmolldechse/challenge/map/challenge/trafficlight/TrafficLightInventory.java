@@ -1,11 +1,9 @@
-package io.github.schmolldechse.challenge.map.trafficlight.settings;
+package io.github.schmolldechse.challenge.map.challenge.trafficlight;
 
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import io.github.schmolldechse.Plugin;
-import io.github.schmolldechse.challenge.map.trafficlight.TrafficLightChallenge;
-import io.github.schmolldechse.challenge.map.trafficlight.TrafficLightStatus;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -15,7 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.time.Duration;
 import java.util.Arrays;
 
-public class SettingsInventory {
+public class TrafficLightInventory {
 
     private final Plugin plugin;
 
@@ -23,7 +21,7 @@ public class SettingsInventory {
 
     private final Gui gui;
 
-    public SettingsInventory(TrafficLightChallenge challenge) {
+    public TrafficLightInventory(TrafficLightChallenge challenge) {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
         this.challenge = challenge;
 

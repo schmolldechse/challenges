@@ -1,10 +1,10 @@
-package io.github.schmolldechse.setting.map.hearts;
+package io.github.schmolldechse.challenge.map.player.maxhearts;
 
 import com.google.inject.Inject;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.Plugin;
-import io.github.schmolldechse.setting.Setting;
-import io.github.schmolldechse.setting.map.hearts.settings.SettingsInventory;
+import io.github.schmolldechse.challenge.Challenge;
+import io.github.schmolldechse.challenge.Identification;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -12,7 +12,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,21 +22,26 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
-public class HeartsSetting extends Setting {
+public class MaxHeartsSetting extends Challenge {
 
     private final Plugin plugin;
 
     //TODO: fix display
     public double maxHearts = 20.0D;
 
-    private final SettingsInventory settingsInventory;
+    private final MaxHeartsInventory settingsInventory;
 
     @Inject
-    public HeartsSetting() {
-        super("s_health");
+    public MaxHeartsSetting() {
+        super("setting_maxhearts");
 
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
-        this.settingsInventory = new SettingsInventory(this);
+        this.settingsInventory = new MaxHeartsInventory(this);
+    }
+
+    @Override
+    public Identification challengeIdentification() {
+        return Identification.PLAYER;
     }
 
     @Override
@@ -45,10 +49,7 @@ public class HeartsSetting extends Setting {
         return ItemBuilder.from(Material.GOLDEN_APPLE)
                 .name(this.getDisplayName())
                 .lore(this.getDescription())
-                .pdc(persistentDataContainer -> {
-                    NamespacedKey key = new NamespacedKey(this.plugin, "identifier");
-                    persistentDataContainer.set(key, PersistentDataType.STRING, this.getIdentifierName());
-                })
+                .pdc(persistentDataContainer -> persistentDataContainer.set(this.key, PersistentDataType.STRING, this.getIdentifierName()))
                 .build();
     }
 
@@ -64,6 +65,7 @@ public class HeartsSetting extends Setting {
                 : Component.text("Deaktiviert", NamedTextColor.RED);
 
         return Arrays.asList(
+                Component.empty(),
                 Component.text("Setze die maximalen Herzen fest,", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.text("die ein Spieler besitzen kann", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.empty(),

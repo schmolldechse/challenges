@@ -1,16 +1,16 @@
-package io.github.schmolldechse.setting.map;
+package io.github.schmolldechse.challenge.map.world;
 
 import com.google.inject.Inject;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.Plugin;
-import io.github.schmolldechse.setting.Setting;
+import io.github.schmolldechse.challenge.Challenge;
+import io.github.schmolldechse.challenge.Identification;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,15 +24,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class NoCraftingtableSetting extends Setting {
+public class CraftingtableSetting extends Challenge {
 
     private final Plugin plugin;
 
     @Inject
-    public NoCraftingtableSetting() {
-        super("s_nocraftingtable");
+    public CraftingtableSetting() {
+        super("setting_nocraftingtable");
 
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
+    }
+
+    @Override
+    public Identification challengeIdentification() {
+        return Identification.WORLD;
     }
 
     @Override
@@ -40,10 +45,7 @@ public class NoCraftingtableSetting extends Setting {
         return ItemBuilder.from(Material.CRAFTING_TABLE)
                 .name(this.getDisplayName())
                 .lore(this.getDescription())
-                .pdc(persistentDataContainer -> {
-                    NamespacedKey key = new NamespacedKey(this.plugin, "identifier");
-                    persistentDataContainer.set(key, PersistentDataType.STRING, this.getIdentifierName());
-                })
+                .pdc(persistentDataContainer -> persistentDataContainer.set(this.key, PersistentDataType.STRING, this.getIdentifierName()))
                 .build();
     }
 
@@ -59,6 +61,7 @@ public class NoCraftingtableSetting extends Setting {
                 : Component.text("Deaktiviert", NamedTextColor.RED);
 
         return Arrays.asList(
+                Component.empty(),
                 Component.text("Verwendest oder stellst du dir eine", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.text("Werkbank her, ist die Challenge gescheitert", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.empty(),

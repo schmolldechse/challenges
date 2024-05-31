@@ -48,12 +48,14 @@ public class ChallengeHandler {
     public void toggle(String identifier) {
         if (this.plugin == null) throw new IllegalStateException("Plugin is not initialized");
 
+        /** TODO: to be removed
         this.registeredChallenges.entrySet().stream()
                 .filter(entry -> entry.getValue().isActive() && !entry.getKey().equals(identifier))
                 .forEach(entry -> {
                     entry.getValue().active = false;
                     entry.getValue().onDeactivate();
                 });
+         */
 
         Challenge challenge = this.getChallenge(identifier);
         if (challenge == null) throw new IllegalArgumentException("Challenge with identifier " + identifier + " does not exist");

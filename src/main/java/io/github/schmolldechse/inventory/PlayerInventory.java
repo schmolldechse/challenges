@@ -15,19 +15,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class ChallengeInventory {
+public class PlayerInventory {
 
     private final Plugin plugin;
     private final PaginatedGui gui;
 
     private final NamespacedKey key;
 
-    public ChallengeInventory() {
+    public PlayerInventory() {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
         this.key = new NamespacedKey(this.plugin, "identifier");
 
         this.gui = Gui.paginated()
-                .title(Component.text("Challenges", NamedTextColor.YELLOW).decoration(TextDecoration.BOLD, true))
+                .title(Component.text("Spieler Einstellungen", NamedTextColor.RED).decoration(TextDecoration.BOLD, true))
                 .rows(6)
                 .pageSize(45)
                 .disableAllInteractions()
@@ -76,7 +76,7 @@ public class ChallengeInventory {
         this.gui.clearPageItems();
 
         this.plugin.challengeHandler.registeredChallenges.entrySet().stream()
-                .filter(entry -> entry.getValue().challengeIdentification() == Identification.CHALLENGE)
+                .filter(entry -> entry.getValue().challengeIdentification() == Identification.PLAYER)
                 .forEach(entry -> {
                     Challenge challenge = entry.getValue();
 

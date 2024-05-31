@@ -1,9 +1,8 @@
-package io.github.schmolldechse.setting.map.hearts.settings;
+package io.github.schmolldechse.challenge.map.player.maxhearts;
 
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import io.github.schmolldechse.Plugin;
-import io.github.schmolldechse.setting.map.hearts.HeartsSetting;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -12,15 +11,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 
-public class SettingsInventory {
+public class MaxHeartsInventory {
 
     private final Plugin plugin;
 
-    private final HeartsSetting setting;
+    private final MaxHeartsSetting setting;
 
     private final Gui gui;
 
-    public SettingsInventory(HeartsSetting setting) {
+    public MaxHeartsInventory(MaxHeartsSetting setting) {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
         this.setting = setting;
 
@@ -33,7 +32,7 @@ public class SettingsInventory {
         this.gui.setItem(3, 1, ItemBuilder.from(Material.MANGROVE_DOOR)
                 .name(Component.text("Zurück", NamedTextColor.RED).decoration(TextDecoration.ITALIC, true))
                 .asGuiItem((event) -> {
-                    this.plugin.settingInventory.getInventory().open(event.getWhoClicked());
+                    this.plugin.playerInventory.getInventory().open(event.getWhoClicked());
                 }));
 
         this.gui.setItem(2, 4, ItemBuilder.from(Material.DARK_OAK_BUTTON)
@@ -50,7 +49,6 @@ public class SettingsInventory {
                     this.setting.updateHearts(this.setting.maxHearts);
 
                     this.statusItems();
-                    this.gui.update();
                 }));
 
         this.gui.setItem(2, 6, ItemBuilder.from(Material.DARK_OAK_BUTTON)
@@ -69,10 +67,7 @@ public class SettingsInventory {
                     this.gui.update();
                 }));
 
-        this.gui.setOpenGuiAction(event -> {
-            this.statusItems();
-            this.gui.update();
-        });
+        this.gui.setOpenGuiAction(event -> this.statusItems());
     }
 
     private void statusItems() {

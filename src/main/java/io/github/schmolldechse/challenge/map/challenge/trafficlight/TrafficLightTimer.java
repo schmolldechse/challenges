@@ -1,4 +1,4 @@
-package io.github.schmolldechse.challenge.map.trafficlight;
+package io.github.schmolldechse.challenge.map.challenge.trafficlight;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;

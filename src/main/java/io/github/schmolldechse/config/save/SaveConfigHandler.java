@@ -6,7 +6,6 @@ import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.challenge.Challenge;
-import io.github.schmolldechse.setting.Setting;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -53,18 +52,6 @@ public class SaveConfigHandler {
                 challenge.append(value);
             });
 
-            // setting json object
-            Type settingType = new TypeToken<Map<String, Map<String, Object>>>(){}.getType();
-            Map<String, Map<String, Object>> settingData = this.GSON.fromJson(this.GSON.toJson(data.get("settings")), settingType);
-            settingData.forEach((key, value) -> {
-                Setting setting = this.plugin.settingHandler.getSetting(key);
-                if (setting == null) return;
-
-                setting.setActive(true);
-                setting.onActivate();
-                setting.append(value);
-            });
-
             // timer json object
             Type timerType = new TypeToken<Map<String, Object>>(){}.getType();
             Map<String, Object> timerData = this.GSON.fromJson(this.GSON.toJson(data.get("timer")), timerType);
@@ -86,13 +73,6 @@ public class SaveConfigHandler {
                 .filter(entry -> entry.getValue().isActive())
                 .forEach(entry -> challengeData.put(entry.getKey(), entry.getValue().save()));
         data.put("challenges", challengeData);
-
-        // Saving setting data
-        Map<String, Map<String, Object>> settingData = new HashMap<>();
-        this.plugin.settingHandler.registeredSettings.entrySet().stream()
-                .filter(entry -> entry.getValue().isActive())
-                .forEach(entry -> settingData.put(entry.getKey(), entry.getValue().save()));
-        data.put("settings", settingData);
 
         // Saving timer data
         data.put("timer", Map.of(

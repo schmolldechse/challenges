@@ -1,16 +1,16 @@
-package io.github.schmolldechse.setting.map;
+package io.github.schmolldechse.challenge.map.player;
 
 import com.google.inject.Inject;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.Plugin;
-import io.github.schmolldechse.setting.Setting;
+import io.github.schmolldechse.challenge.Challenge;
+import io.github.schmolldechse.challenge.Identification;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SplitHeartsSetting extends Setting {
+public class SplitHeartsSetting extends Challenge {
 
     private final Plugin plugin;
 
@@ -31,9 +31,14 @@ public class SplitHeartsSetting extends Setting {
 
     @Inject
     public SplitHeartsSetting() {
-        super("s_splithearts");
+        super("setting_splithearts");
 
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
+    }
+
+    @Override
+    public Identification challengeIdentification() {
+        return Identification.PLAYER;
     }
 
     @Override
@@ -41,10 +46,7 @@ public class SplitHeartsSetting extends Setting {
         return ItemBuilder.from(Material.DIAMOND_SWORD)
                 .name(this.getDisplayName())
                 .lore(this.getDescription())
-                .pdc(persistentDataContainer -> {
-                    NamespacedKey key = new NamespacedKey(this.plugin, "identifier");
-                    persistentDataContainer.set(key, PersistentDataType.STRING, this.getIdentifierName());
-                })
+                .pdc(persistentDataContainer -> persistentDataContainer.set(this.key, PersistentDataType.STRING, this.getIdentifierName()))
                 .build();
     }
 
@@ -60,6 +62,7 @@ public class SplitHeartsSetting extends Setting {
                 : Component.text("Deaktiviert", NamedTextColor.RED);
 
         return Arrays.asList(
+                Component.empty(),
                 Component.text("Passt auf, diesesmal teilt ihr euch", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.text("eure Herzen! Nimmt jemand Schaden, dann", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.text("erleiden alle anderen Spieler den gleichen Schaden", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),

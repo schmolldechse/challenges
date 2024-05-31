@@ -1,4 +1,4 @@
-package io.github.schmolldechse.challenge.map.trafficlight;
+package io.github.schmolldechse.challenge.map.challenge.trafficlight;
 
 public enum TrafficLightStatus {
 

@@ -1,10 +1,10 @@
-package io.github.schmolldechse.challenge.map.trafficlight;
+package io.github.schmolldechse.challenge.map.challenge.trafficlight;
 
 import com.google.inject.Inject;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.challenge.Challenge;
-import io.github.schmolldechse.challenge.map.trafficlight.settings.SettingsInventory;
+import io.github.schmolldechse.challenge.Identification;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -37,14 +37,19 @@ public class TrafficLightChallenge extends Challenge {
     private TrafficLightTimer timer;
     public TrafficLightStatus status;
 
-    private final SettingsInventory settingsInventory;
+    private final TrafficLightInventory settingsInventory;
 
     @Inject
     public TrafficLightChallenge() {
-        super("c_trafficlight");
+        super("challenge_trafficlight");
 
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
-        this.settingsInventory = new SettingsInventory(this);
+        this.settingsInventory = new TrafficLightInventory(this);
+    }
+
+    @Override
+    public Identification challengeIdentification() {
+        return Identification.CHALLENGE;
     }
 
     @Override
@@ -58,9 +63,10 @@ public class TrafficLightChallenge extends Challenge {
                 ? Component.text("Aktiviert", NamedTextColor.GREEN)
                 : Component.text("Deaktiviert", NamedTextColor.RED);
 
-        return ItemBuilder.from(Material.DIRT)
+        return ItemBuilder.from(Material.GREEN_CONCRETE)
                 .name(this.getDisplayName())
                 .lore(Arrays.asList(
+                        Component.empty(),
                         Component.text("Aufgepasst, die Ampel spielt verrückt! Sei achtsam,", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                         Component.text("denn sobald sie auf gelb springt, solltest du", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                         Component.text("lieber stehen bleiben!", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
@@ -70,10 +76,7 @@ public class TrafficLightChallenge extends Challenge {
                         Component.text("[Rechtsklick]", NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, true)
                                 .append(Component.text(" zum Bearbeiten", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false))
                 ))
-                .pdc(persistentDataContainer -> {
-                    NamespacedKey key = new NamespacedKey(this.plugin, "identifier");
-                    persistentDataContainer.set(key, PersistentDataType.STRING, this.getIdentifierName());
-                })
+                .pdc(persistentDataContainer -> persistentDataContainer.set(this.key, PersistentDataType.STRING, this.getIdentifierName()))
                 .build();
     }
 

@@ -10,13 +10,10 @@ import io.github.schmolldechse.commands.ResetCommand;
 import io.github.schmolldechse.commands.SetupCommand;
 import io.github.schmolldechse.commands.TimerCommand;
 import io.github.schmolldechse.config.save.SaveConfigHandler;
-import io.github.schmolldechse.inventory.ChallengeInventory;
-import io.github.schmolldechse.inventory.SettingInventory;
-import io.github.schmolldechse.inventory.SetupInventory;
+import io.github.schmolldechse.inventory.*;
 import io.github.schmolldechse.listener.PlayerJoinListener;
 import io.github.schmolldechse.listener.PlayerMoveListener;
 import io.github.schmolldechse.listener.PlayerResourcePackStatusListener;
-import io.github.schmolldechse.setting.SettingHandler;
 import io.github.schmolldechse.timer.TimerHandler;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -35,7 +32,6 @@ public final class Plugin extends JavaPlugin {
 
     @Inject public TimerHandler timerHandler;
     @Inject public ChallengeHandler challengeHandler;
-    @Inject public SettingHandler settingHandler;
     @Inject public SaveConfigHandler saveConfigHandler;
 
     public boolean MOVEMENT_ALLOWED = true;
@@ -50,8 +46,10 @@ public final class Plugin extends JavaPlugin {
 
     // inventories
     public SetupInventory setupInventory;
+    public ConditionInventory conditionInventory;
     public ChallengeInventory challengeInventory;
-    public SettingInventory settingInventory;
+    public PlayerInventory playerInventory;
+    public WorldInventory worldInventory;
 
     @Override
     public void onLoad() {
@@ -82,8 +80,10 @@ public final class Plugin extends JavaPlugin {
         new PlayerResourcePackStatusListener();
 
         this.setupInventory = new SetupInventory();
+        this.conditionInventory = new ConditionInventory();
         this.challengeInventory = new ChallengeInventory();
-        this.settingInventory = new SettingInventory();
+        this.playerInventory = new PlayerInventory();
+        this.worldInventory = new WorldInventory();
 
         this.RESET_EXECUTED = false;
 
@@ -98,7 +98,6 @@ public final class Plugin extends JavaPlugin {
 
         if (this.timerHandler != null) this.timerHandler.shutdown();
         if (this.challengeHandler != null) this.challengeHandler.deactivate();
-        if (this.settingHandler != null) this.settingHandler.deactivate();
 
         this.purgeWorlds(false);
     }
