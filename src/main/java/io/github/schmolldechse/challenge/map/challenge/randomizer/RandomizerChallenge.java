@@ -209,30 +209,48 @@ public class RandomizerChallenge extends Challenge {
 
     protected void shuffle(boolean force) {
         if (force || this.BLOCKS_RANDOMIZED) {
+            List<Material> copy = new ArrayList<>(this.filteredItemBlockList);
+
             this.blocksRandomizerMap = this.filteredItemBlockList.stream()
                     .collect(Collectors.toMap(
                             material -> material,
-                            material -> this.filteredItemBlockList.get(this.random.nextInt(this.filteredItemBlockList.size()))
+                            material -> {
+                                Material randomMaterial = copy.get(this.random.nextInt(copy.size()));
+                                copy.remove(randomMaterial);
+                                return randomMaterial;
+                            }
                     ));
 
             this.plugin.getLogger().info("Randomized " + this.blocksRandomizerMap.size() + " blocks");
         }
 
         if (force || this.ENTITIES_RANDOMIZED) {
+            List<EntityType> copy = new ArrayList<>(this.filteredEntityTypes);
+
             this.entitiesRandomizerMap = this.filteredEntityTypes.stream()
                     .collect(Collectors.toMap(
                             entityType -> entityType,
-                            entityType -> this.filteredEntityTypes.get(this.random.nextInt(this.filteredEntityTypes.size()))
+                            entityType -> {
+                                EntityType randomEntityType = copy.get(this.random.nextInt(copy.size()));
+                                copy.remove(randomEntityType);
+                                return randomEntityType;
+                            }
                     ));
 
             this.plugin.getLogger().info("Randomized " + this.entitiesRandomizerMap.size() + " entities");
         }
 
         if (force || this.CRAFTING_RANDOMIZED) {
+            List<Material> copy = new ArrayList<>(this.filteredItemList);
+
             this.craftingRandomizerMap = this.filteredItemList.stream()
                     .collect(Collectors.toMap(
                             material -> material,
-                            material -> this.filteredItemList.get(this.random.nextInt(this.filteredItemList.size()))
+                            material -> {
+                                Material randomMaterial = copy.get(this.random.nextInt(copy.size()));
+                                copy.remove(randomMaterial);
+                                return randomMaterial;
+                            }
                     ));
 
             this.plugin.getLogger().info("Randomized " + this.craftingRandomizerMap.size() + " crafting recipes");
