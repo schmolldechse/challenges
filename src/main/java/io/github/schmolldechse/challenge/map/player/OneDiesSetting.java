@@ -59,8 +59,8 @@ public class OneDiesSetting extends Challenge {
 
         return Arrays.asList(
                 Component.empty(),
-                Component.text("Stirbt ein Spieler, sterben alle. Die", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
-                Component.text("Challenge gilt als fehlgeschlagen", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
+                Component.text("Sobald ein Spieler stirbt, ist", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
+                Component.text("die Challenge fehlgeschlagen", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.empty(),
                 activated
         );
