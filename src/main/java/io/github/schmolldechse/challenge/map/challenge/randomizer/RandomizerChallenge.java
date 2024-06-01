@@ -32,11 +32,36 @@ public class RandomizerChallenge extends Challenge {
 
     private final Random random = new Random();
 
-    public boolean BLOCKS_RANDOMIZED, ENTITIES_RANDOMIZED, CRAFTING_RANDOMIZED;
+    public boolean BLOCKS_RANDOMIZED = false,
+            ENTITIES_RANDOMIZED = false,
+            CRAFTING_RANDOMIZED = false;
     // Origin -> Random
     public Map<Material, Material> blocksRandomizerMap = new HashMap<>();
     public Map<Material, Material> craftingRandomizerMap = new HashMap<>();
     public Map<EntityType, EntityType> entitiesRandomizerMap = new HashMap<>();
+
+    //TODO: remove in 1.21 again
+    private final List<Material> excludedMaterials = List.of(
+            Material.TUFF_SLAB, Material.TUFF_STAIRS, Material.TUFF_WALL, Material.CHISELED_TUFF,
+            Material.POLISHED_TUFF, Material.POLISHED_TUFF_SLAB, Material.POLISHED_TUFF_STAIRS,
+            Material.POLISHED_TUFF_WALL, Material.TUFF_BRICKS, Material.TUFF_BRICK_SLAB,
+            Material.TUFF_BRICK_STAIRS, Material.TUFF_BRICK_WALL, Material.CHISELED_TUFF_BRICKS,
+            Material.CHISELED_COPPER, Material.EXPOSED_CHISELED_COPPER, Material.WEATHERED_CHISELED_COPPER,
+            Material.OXIDIZED_CHISELED_COPPER, Material.WAXED_CHISELED_COPPER, Material.WAXED_EXPOSED_CHISELED_COPPER,
+            Material.WAXED_WEATHERED_CHISELED_COPPER, Material.WAXED_OXIDIZED_CHISELED_COPPER, Material.COPPER_DOOR,
+            Material.EXPOSED_COPPER_DOOR, Material.WEATHERED_COPPER_DOOR, Material.OXIDIZED_COPPER_DOOR,
+            Material.WAXED_COPPER_DOOR, Material.WAXED_EXPOSED_COPPER_DOOR, Material.WAXED_WEATHERED_COPPER_DOOR,
+            Material.WAXED_OXIDIZED_COPPER_DOOR, Material.COPPER_TRAPDOOR, Material.EXPOSED_COPPER_TRAPDOOR,
+            Material.WEATHERED_COPPER_TRAPDOOR, Material.OXIDIZED_COPPER_TRAPDOOR, Material.WAXED_COPPER_TRAPDOOR,
+            Material.WAXED_EXPOSED_COPPER_TRAPDOOR, Material.WAXED_WEATHERED_COPPER_TRAPDOOR, Material.WAXED_OXIDIZED_COPPER_TRAPDOOR,
+            Material.BUNDLE, Material.CRAFTER, Material.BREEZE_SPAWN_EGG, Material.COPPER_GRATE,
+            Material.EXPOSED_COPPER_GRATE, Material.WEATHERED_COPPER_GRATE, Material.OXIDIZED_COPPER_GRATE,
+            Material.WAXED_COPPER_GRATE, Material.WAXED_EXPOSED_COPPER_GRATE, Material.WAXED_WEATHERED_COPPER_GRATE,
+            Material.WAXED_OXIDIZED_COPPER_GRATE, Material.COPPER_BULB, Material.EXPOSED_COPPER_BULB,
+            Material.WEATHERED_COPPER_BULB, Material.OXIDIZED_COPPER_BULB, Material.WAXED_COPPER_BULB,
+            Material.WAXED_EXPOSED_COPPER_BULB, Material.WAXED_WEATHERED_COPPER_BULB, Material.WAXED_OXIDIZED_COPPER_BULB,
+            Material.TRIAL_SPAWNER, Material.TRIAL_KEY, Material.AIR
+    );
 
     private final List<EntityType> filteredEntityTypes = Stream.of(EntityType.values())
             .filter(EntityType::isSpawnable)
@@ -88,11 +113,13 @@ public class RandomizerChallenge extends Challenge {
 
     private final List<Material> filteredItemList = Stream.of(Material.values())
             .filter(Material::isItem)
+            .filter(material -> !this.excludedMaterials.contains(material))
             .filter(material -> material != Material.AIR)
             .toList();
 
     private final List<Material> filteredItemBlockList = Stream.of(Material.values())
             .filter(Material::isItem)
+            .filter(material -> !this.excludedMaterials.contains(material))
             .filter(Material::isBlock)
             .filter(material -> material != Material.AIR)
             .toList();
@@ -266,10 +293,12 @@ public class RandomizerChallenge extends Challenge {
         if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) return;
 
         Material randomMaterial = this.blocksRandomizerMap.get(event.getBlock().getType());
+        if (randomMaterial == null) return;
 
         event.setDropItems(false);
 
         event.getBlock().getDrops().forEach(drop -> {
+            if (drop.getAmount() < 1) return;
             ItemStack newItem = new ItemStack(randomMaterial, drop.getAmount());
             event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), newItem);
         });
