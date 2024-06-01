@@ -115,6 +115,8 @@ public class TrafficLightChallenge extends Challenge {
         this.bossBar.name(this.components.trafficLight);
 
         Bukkit.getServer().audiences().forEach(audience -> this.bossBar.addViewer(audience));
+
+        super.onActivate();
     }
 
     @Override
@@ -195,21 +197,5 @@ public class TrafficLightChallenge extends Challenge {
             this.fail();
             this.timer.pause();
         }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void execute(PlayerDeathEvent event) {
-        if (!this.active) return;
-        if (this.plugin.timerHandler.isPaused()) return;
-
-        if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) return;
-
-        event.deathMessage(
-                Component.text(event.getPlayer().getName(), NamedTextColor.GREEN)
-                        .append(Component.text(" ist gestorben!", NamedTextColor.RED))
-        );
-
-        this.fail();
-        this.timer.pause();
     }
 }

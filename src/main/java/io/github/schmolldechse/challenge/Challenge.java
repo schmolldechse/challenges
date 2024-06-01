@@ -138,9 +138,7 @@ public abstract class Challenge implements Listener {
         if (!this.plugin.timerHandler.isPaused()) this.onResume();
     }
 
-    public void onDeactivate() {
-
-    }
+    public void onDeactivate() { }
 
     public void onPause() { }
 
