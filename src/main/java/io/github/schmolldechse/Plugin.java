@@ -42,7 +42,7 @@ public final class Plugin extends JavaPlugin {
     public String RESOURCEPACK_URL = "https://voldechse.wtf/challenges.zip";
     public String RESOURCEPACK_HASH;
 
-    public boolean RESET_EXECUTED = false;
+    public boolean DELETE_EXECUTED = false;
 
     // inventories
     public SetupInventory setupInventory;
@@ -85,7 +85,7 @@ public final class Plugin extends JavaPlugin {
         this.playerInventory = new PlayerInventory();
         this.worldInventory = new WorldInventory();
 
-        this.RESET_EXECUTED = false;
+        this.DELETE_EXECUTED = false;
 
         this.saveConfigHandler.readAppend();
     }
@@ -94,7 +94,7 @@ public final class Plugin extends JavaPlugin {
     public void onDisable() {
         CommandAPI.onDisable();
 
-        if (!this.RESET_EXECUTED && this.saveConfigHandler != null) this.saveConfigHandler.save();
+        if (!this.DELETE_EXECUTED && this.saveConfigHandler != null) this.saveConfigHandler.save();
 
         if (this.timerHandler != null) this.timerHandler.shutdown();
         if (this.challengeHandler != null) this.challengeHandler.deactivate();

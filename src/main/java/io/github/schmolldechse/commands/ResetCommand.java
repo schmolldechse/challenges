@@ -1,6 +1,7 @@
 package io.github.schmolldechse.commands;
 
 import dev.jorel.commandapi.CommandTree;
+import dev.jorel.commandapi.arguments.LiteralArgument;
 import io.github.schmolldechse.Plugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -19,7 +20,13 @@ import java.util.stream.Collectors;
 
 public class ResetCommand {
 
-    // /reset
+    /**
+     * Deletes all registered world folder and restarts the server
+     * When specified, it copies the current {@link io.github.schmolldechse.challenge.ChallengeHandler settings}
+     *
+     * /reset
+     * /reset copy
+     */
 
     private final Plugin plugin;
 
@@ -29,8 +36,15 @@ public class ResetCommand {
 
     public void registerCommand() {
         new CommandTree("reset")
+                .then(new LiteralArgument("copy")
+                        .executes((sender, args) -> {
+                            this.prepare();
+                            this.executeRestart();
+                        }))
                 .executes((sender, args) -> {
                     this.prepare();
+                    this.plugin.DELETE_EXECUTED = true;
+                    this.executeRestart();
                 })
                 .register();
     }
@@ -53,9 +67,9 @@ public class ResetCommand {
         } catch (IOException exception) {
             this.plugin.getLogger().severe("Failed to create reset cache file");
         }
+    }
 
-        this.plugin.RESET_EXECUTED = true;
-
+    private void executeRestart() {
         switch (this.plugin.RESET_TYPE) {
             case "STOP":
                 Bukkit.shutdown();
