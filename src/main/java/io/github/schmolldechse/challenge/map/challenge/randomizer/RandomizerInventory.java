@@ -34,6 +34,8 @@ public class RandomizerInventory {
                 .asGuiItem((event) -> this.plugin.challengeInventory.getInventory().open(event.getWhoClicked())));
 
         this.statusItems();
+
+        this.gui.setCloseGuiAction(event -> this.challenge.shuffle(false));
     }
 
     private void statusItems() {
@@ -51,7 +53,6 @@ public class RandomizerInventory {
                 )
                 .asGuiItem(event -> {
                     this.challenge.BLOCKS_RANDOMIZED = !this.challenge.BLOCKS_RANDOMIZED;
-                    this.challenge.shuffle(false);
 
                     this.statusItems();
                     this.gui.update();
@@ -71,7 +72,6 @@ public class RandomizerInventory {
                 )
                 .asGuiItem(event -> {
                     this.challenge.ENTITIES_RANDOMIZED = !this.challenge.ENTITIES_RANDOMIZED;
-                    this.challenge.shuffle(false);
 
                     this.statusItems();
                     this.gui.update();
@@ -91,7 +91,6 @@ public class RandomizerInventory {
                 )
                 .asGuiItem(event -> {
                     this.challenge.CRAFTING_RANDOMIZED = !this.challenge.CRAFTING_RANDOMIZED;
-                    this.challenge.shuffle(false);
 
                     this.statusItems();
                     this.gui.update();

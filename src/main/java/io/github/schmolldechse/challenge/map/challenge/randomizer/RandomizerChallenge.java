@@ -10,6 +10,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -69,21 +70,38 @@ public class RandomizerChallenge extends Challenge {
             .filter(entityType -> entityType != EntityType.INTERACTION)
             .filter(entityType -> entityType != EntityType.ITEM_DISPLAY)
             .filter(entityType -> entityType != EntityType.TEXT_DISPLAY)
-            .filter(entityType -> entityType != EntityType.BREEZE)
+            .filter(entityType -> entityType != EntityType.BREEZE) //TODO: mob will be added in 1.21
             .filter(entityType -> entityType != EntityType.WIND_CHARGE)
             .filter(entityType -> entityType != EntityType.FISHING_HOOK)
             .filter(entityType -> entityType != EntityType.LIGHTNING)
             .filter(entityType -> entityType != EntityType.PLAYER)
             .filter(entityType -> entityType != EntityType.UNKNOWN)
             .filter(entityType -> entityType != EntityType.ENDER_DRAGON)
+            .filter(entityType -> entityType != EntityType.MINECART)
+            .filter(entityType -> entityType != EntityType.MINECART_CHEST)
+            .filter(entityType -> entityType != EntityType.MINECART_FURNACE)
+            .filter(entityType -> entityType != EntityType.MINECART_TNT)
+            .filter(entityType -> entityType != EntityType.MINECART_HOPPER)
+            .filter(entityType -> entityType != EntityType.MINECART_MOB_SPAWNER)
+            .filter(entityType -> entityType != EntityType.WITHER)
             .toList();
-    private boolean spawnable = true;
+
+    private final List<Material> filteredItemList = Stream.of(Material.values())
+            .filter(Material::isItem)
+            .filter(material -> material != Material.AIR)
+            .toList();
+
+    private final List<Material> filteredItemBlockList = Stream.of(Material.values())
+            .filter(Material::isItem)
+            .filter(Material::isBlock)
+            .filter(material -> material != Material.AIR)
+            .toList();
 
     private final RandomizerInventory randomizerInventory;
 
     @Inject
     public RandomizerChallenge() {
-        super("c_randomizer");
+        super("challenge_randomizer");
 
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
         this.shuffle(true);
@@ -191,19 +209,10 @@ public class RandomizerChallenge extends Challenge {
 
     protected void shuffle(boolean force) {
         if (force || this.BLOCKS_RANDOMIZED) {
-            this.blocksRandomizerMap = Stream.of(Material.values())
-                    .filter(material -> !material.isAir())
-                    .filter(Material::isItem)
-                    .filter(Material::isBlock)
+            this.blocksRandomizerMap = this.filteredItemBlockList.stream()
                     .collect(Collectors.toMap(
                             material -> material,
-                            material -> {
-                                Material randomMaterial;
-                                do {
-                                    randomMaterial = Material.values()[this.random.nextInt(Material.values().length)];
-                                } while (!randomMaterial.isBlock());
-                                return randomMaterial;
-                            }
+                            material -> this.filteredItemBlockList.get(this.random.nextInt(this.filteredItemBlockList.size()))
                     ));
 
             this.plugin.getLogger().info("Randomized " + this.blocksRandomizerMap.size() + " blocks");
@@ -220,11 +229,10 @@ public class RandomizerChallenge extends Challenge {
         }
 
         if (force || this.CRAFTING_RANDOMIZED) {
-            this.craftingRandomizerMap = Stream.of(Material.values())
-                    .filter(Material::isItem)
+            this.craftingRandomizerMap = this.filteredItemList.stream()
                     .collect(Collectors.toMap(
                             material -> material,
-                            material -> Material.values()[this.random.nextInt(Material.values().length)]
+                            material -> this.filteredItemList.get(this.random.nextInt(this.filteredItemList.size()))
                     ));
 
             this.plugin.getLogger().info("Randomized " + this.craftingRandomizerMap.size() + " crafting recipes");
@@ -249,6 +257,8 @@ public class RandomizerChallenge extends Challenge {
         });
     }
 
+    private int oceanEntityCount = 0;
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void execute(CreatureSpawnEvent event) {
         if (!this.active) return;
@@ -256,20 +266,35 @@ public class RandomizerChallenge extends Challenge {
 
         if (!this.ENTITIES_RANDOMIZED) return;
 
-        if (!this.spawnable) return;
-        this.spawnable = false;
+        // Blocks entities that are spawned by plugins
+        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) return;
 
         if (!this.entitiesRandomizerMap.containsKey(event.getEntityType())) return;
         EntityType randomEntityType = this.entitiesRandomizerMap.get(event.getEntityType());
 
-        event.getLocation().getWorld().spawnEntity(event.getLocation(), randomEntityType);
-        event.setCancelled(true);
+        // prevent ocean being flooded by entities which causes lag
+        Biome biome = event.getLocation().getWorld().getBiome(event.getLocation().getBlockX(), event.getLocation().getBlockY(), event.getLocation().getBlockZ());
+        if (biome == Biome.OCEAN
+                || biome == Biome.FROZEN_OCEAN
+                || biome == Biome.DEEP_OCEAN
+                || biome == Biome.WARM_OCEAN
+                || biome == Biome.LUKEWARM_OCEAN
+                || biome == Biome.COLD_OCEAN
+                || biome == Biome.DEEP_LUKEWARM_OCEAN
+                || biome == Biome.DEEP_COLD_OCEAN
+                || biome == Biome.DEEP_FROZEN_OCEAN
+                || biome == Biome.RIVER
+                || biome == Biome.FROZEN_RIVER) {
+            this.oceanEntityCount++;
+            if (this.oceanEntityCount % 3 != 0) return;
+            this.oceanEntityCount = 0;
+        }
 
-        this.spawnable = true;
-        //event.getLocation().getWorld().spawn(event.getLocation(), randomEntityType.getEntityClass(), CreatureSpawnEvent.SpawnReason.CUSTOM, null);
+        event.getLocation().getWorld().spawnEntity(event.getLocation(), randomEntityType, CreatureSpawnEvent.SpawnReason.CUSTOM);
+        event.setCancelled(true);
     }
 
-    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void execute(CraftItemEvent event) {
         if (!this.active) return;
         if (this.plugin.timerHandler.isPaused()) return;
