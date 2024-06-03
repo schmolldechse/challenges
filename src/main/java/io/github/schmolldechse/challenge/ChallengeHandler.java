@@ -3,7 +3,6 @@ package io.github.schmolldechse.challenge;
 import com.google.inject.Inject;
 import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.misc.Reflection;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
@@ -31,8 +30,6 @@ public class ChallengeHandler {
                 Challenge challenge = constructor.newInstance();
 
                 this.registeredChallenges.put(challenge.getIdentifierName(), challenge);
-
-                Bukkit.getPluginManager().registerEvents(challenge, this.plugin);
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
@@ -47,15 +44,6 @@ public class ChallengeHandler {
 
     public void toggle(String identifier) {
         if (this.plugin == null) throw new IllegalStateException("Plugin is not initialized");
-
-        /** TODO: to be removed
-        this.registeredChallenges.entrySet().stream()
-                .filter(entry -> entry.getValue().isActive() && !entry.getKey().equals(identifier))
-                .forEach(entry -> {
-                    entry.getValue().active = false;
-                    entry.getValue().onDeactivate();
-                });
-         */
 
         Challenge challenge = this.getChallenge(identifier);
         if (challenge == null) throw new IllegalArgumentException("Challenge with identifier " + identifier + " does not exist");

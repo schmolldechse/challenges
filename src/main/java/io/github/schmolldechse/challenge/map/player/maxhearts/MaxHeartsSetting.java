@@ -2,7 +2,6 @@ package io.github.schmolldechse.challenge.map.player.maxhearts;
 
 import com.google.inject.Inject;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
-import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.challenge.Challenge;
 import io.github.schmolldechse.challenge.Identification;
 import net.kyori.adventure.text.Component;
@@ -15,16 +14,14 @@ import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
-public class MaxHeartsSetting extends Challenge {
-
-    private final Plugin plugin;
+public class MaxHeartsSetting extends Challenge implements Listener {
 
     //TODO: fix display
     public double maxHearts = 20.0D;
@@ -35,7 +32,8 @@ public class MaxHeartsSetting extends Challenge {
     public MaxHeartsSetting() {
         super("setting_maxhearts");
 
-        this.plugin = JavaPlugin.getPlugin(Plugin.class);
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+
         this.settingsInventory = new MaxHeartsInventory(this);
     }
 

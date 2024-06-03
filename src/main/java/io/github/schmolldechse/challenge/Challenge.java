@@ -1,6 +1,7 @@
 package io.github.schmolldechse.challenge;
 
 import io.github.schmolldechse.Plugin;
+import io.github.schmolldechse.challenge.module.ModuleRegistry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -21,10 +22,12 @@ import java.util.Map;
 public abstract class Challenge implements Listener {
 
     protected final Plugin plugin;
-
-    protected boolean active = false;
     protected final NamespacedKey key;
+
+    protected final ModuleRegistry moduleRegistry;
+
     private final String identifierName;
+    protected boolean active = false;
 
     /**
      * Creates a new challenge
@@ -34,25 +37,27 @@ public abstract class Challenge implements Listener {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
         this.key = new NamespacedKey(this.plugin, "identifier");
         this.identifierName = identifierName;
+
+        this.moduleRegistry = new ModuleRegistry();
     }
 
     public abstract Identification challengeIdentification();
 
     /**
-     * ItemStack representation of the setting
-     * @return ItemStack
+     * ItemStack representation of the challenge
+     * @return {@link ItemStack}
      */
     public abstract ItemStack getItemStack();
 
     /**
-     * Display name of the setting
-     * @return display name as a Component
+     * Display name of the challenge
+     * @return display name as a {@link Component}
      */
     public abstract Component getDisplayName();
 
     /**
-     * Description of the setting
-     * @return description as a list of Components
+     * Description of the challenge
+     * @return description as a list of {@link Component}
      */
     public abstract List<Component> getDescription();
 
@@ -144,7 +149,11 @@ public abstract class Challenge implements Listener {
 
     public void onResume() { }
 
-    public boolean isActive() { return active; }
+    public boolean isActive() { return this.active; }
 
-    public String getIdentifierName() { return identifierName; }
+    public String getIdentifierName() { return this.identifierName; }
+
+    public ModuleRegistry getModuleRegistry() {
+        return this.moduleRegistry;
+    }
 }

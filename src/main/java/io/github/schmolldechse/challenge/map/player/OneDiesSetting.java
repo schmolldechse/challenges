@@ -2,7 +2,6 @@ package io.github.schmolldechse.challenge.map.player;
 
 import com.google.inject.Inject;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
-import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.challenge.Challenge;
 import io.github.schmolldechse.challenge.Identification;
 import net.kyori.adventure.text.Component;
@@ -12,24 +11,22 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class OneDiesSetting extends Challenge {
-
-    private final Plugin plugin;
+public class OneDiesSetting extends Challenge implements Listener {
 
     @Inject
     public OneDiesSetting() {
         super("setting_onedies");
 
-        this.plugin = JavaPlugin.getPlugin(Plugin.class);
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override

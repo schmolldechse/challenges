@@ -1,7 +1,6 @@
 package io.github.schmolldechse.challenge.map.condition;
 
 import dev.triumphteam.gui.builder.item.ItemBuilder;
-import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.challenge.Challenge;
 import io.github.schmolldechse.challenge.Identification;
 import net.kyori.adventure.text.Component;
@@ -11,22 +10,20 @@ import org.bukkit.Material;
 import org.bukkit.entity.EnderDragon;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class EnderDragonCondition extends Challenge {
-
-    private final Plugin plugin;
+public class EnderDragonCondition extends Challenge implements Listener {
 
     public EnderDragonCondition() {
         super("condition_enderdragon");
 
-        this.plugin = JavaPlugin.getPlugin(Plugin.class);
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override

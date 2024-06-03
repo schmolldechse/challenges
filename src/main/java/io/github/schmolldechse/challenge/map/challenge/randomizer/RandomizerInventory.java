@@ -2,28 +2,33 @@ package io.github.schmolldechse.challenge.map.challenge.randomizer;
 
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
+import dev.triumphteam.gui.guis.PaginatedGui;
 import io.github.schmolldechse.Plugin;
+import io.github.schmolldechse.challenge.Challenge;
+import io.github.schmolldechse.challenge.module.Module;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.Arrays;
 
 public class RandomizerInventory {
 
     private final Plugin plugin;
-
     private final RandomizerChallenge challenge;
 
-    private final Gui gui;
+    private final PaginatedGui gui;
+
+    private final NamespacedKey key;
 
     public RandomizerInventory(RandomizerChallenge challenge) {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
         this.challenge = challenge;
+        this.key = new NamespacedKey(this.plugin, "identifier");
 
-        this.gui = Gui.gui()
+        this.gui = Gui.paginated()
                 .title(Component.text("Einstellungen", NamedTextColor.BLUE).decoration(TextDecoration.BOLD, true))
                 .rows(3)
                 .disableAllInteractions()
@@ -33,71 +38,48 @@ public class RandomizerInventory {
                 .name(Component.text("Zurück", NamedTextColor.RED).decoration(TextDecoration.ITALIC, true))
                 .asGuiItem((event) -> this.plugin.challengeInventory.getInventory().open(event.getWhoClicked())));
 
-        this.statusItems();
+        this.gui.setItem(3, 3, ItemBuilder.from(Material.PAPER)
+                .name(Component.text("vorherige Seite", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, true))
+                .asGuiItem((event) -> {
+                    this.gui.previous();
+                }));
 
-        this.gui.setCloseGuiAction(event -> this.challenge.shuffle(false));
+        this.gui.setItem(3, 7, ItemBuilder.from(Material.PAPER)
+                .name(Component.text("nächste Seite", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, true))
+                .asGuiItem((event) -> {
+                    this.gui.next();
+                }));
+
+        this.gui.setDefaultClickAction(event -> {
+            if (event.getCurrentItem() == null) return;
+            if (!event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(this.key)) return;
+
+            String identifier = event.getCurrentItem().getItemMeta().getPersistentDataContainer().get(this.key, PersistentDataType.STRING);
+            Module<? extends Challenge> module = this.challenge.getModuleRegistry().module(identifier);
+            if (module == null) return;
+
+            module.toggle();
+            this.updateGuiItems();
+        });
+
+        this.gui.setOpenGuiAction(event -> this.updateGuiItems());
     }
 
-    private void statusItems() {
-        this.gui.setItem(2, 2, ItemBuilder.from(Material.GRASS_BLOCK)
-                .name(Component.text("Blöcke Randomizer", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false))
-                .lore(Arrays.asList(
-                        Component.text("Beinhaltet " + this.challenge.blocksRandomizerMap.size() + " Blöcke", NamedTextColor.GRAY),
-                        Component.empty(),
-                                Component.text("[Klick]", NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, true)
-                                        .append(Component.text(" zum (De-) Aktivieren", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)),
-                        Component.empty(),
-                        this.challenge.BLOCKS_RANDOMIZED
-                                ? Component.text("Aktiviert", NamedTextColor.GREEN)
-                                : Component.text("Deaktiviert", NamedTextColor.RED))
-                )
-                .asGuiItem(event -> {
-                    this.challenge.BLOCKS_RANDOMIZED = !this.challenge.BLOCKS_RANDOMIZED;
+    public void updateGuiItems() {
+        this.gui.clearPageItems();
 
-                    this.statusItems();
-                    this.gui.update();
-                }));
+        this.challenge.getModuleRegistry().getModules()
+                .forEach(module -> {
+                    this.gui.addItem(ItemBuilder.from(module.getItemStack())
+                            .glow(module.isActive())
+                            .asGuiItem()
+                    );
+                });
 
-        this.gui.setItem(2, 5, ItemBuilder.from(Material.CREEPER_HEAD)
-                .name(Component.text("Entities Randomizer", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false))
-                .lore(Arrays.asList(
-                        Component.text("Beinhaltet " + this.challenge.entitiesRandomizerMap.size() + " Entities", NamedTextColor.GRAY),
-                        Component.empty(),
-                        Component.text("[Klick]", NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, true)
-                                .append(Component.text(" zum (De-) Aktivieren", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)),
-                        Component.empty(),
-                        this.challenge.ENTITIES_RANDOMIZED
-                                ? Component.text("Aktiviert", NamedTextColor.GREEN)
-                                : Component.text("Deaktiviert", NamedTextColor.RED))
-                )
-                .asGuiItem(event -> {
-                    this.challenge.ENTITIES_RANDOMIZED = !this.challenge.ENTITIES_RANDOMIZED;
-
-                    this.statusItems();
-                    this.gui.update();
-                }));
-
-        this.gui.setItem(2, 8, ItemBuilder.from(Material.CRAFTING_TABLE)
-                .name(Component.text("Craftingrezepte Randomizer", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false))
-                .lore(Arrays.asList(
-                        Component.text("Beinhaltet " + this.challenge.craftingRandomizerMap.size() + " Crafting Rezepte", NamedTextColor.GRAY),
-                        Component.empty(),
-                        Component.text("[Klick]", NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, true)
-                                .append(Component.text(" zum (De-) Aktivieren", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)),
-                        Component.empty(),
-                        this.challenge.CRAFTING_RANDOMIZED
-                                ? Component.text("Aktiviert", NamedTextColor.GREEN)
-                                : Component.text("Deaktiviert", NamedTextColor.RED))
-                )
-                .asGuiItem(event -> {
-                    this.challenge.CRAFTING_RANDOMIZED = !this.challenge.CRAFTING_RANDOMIZED;
-
-                    this.statusItems();
-                    this.gui.update();
-                }));
+        this.gui.update();
     }
 
-    public Gui getInventory() {
+    public PaginatedGui getInventory() {
         return gui;
     }
 }
