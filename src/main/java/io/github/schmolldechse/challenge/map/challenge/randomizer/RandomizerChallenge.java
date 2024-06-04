@@ -7,6 +7,7 @@ import io.github.schmolldechse.challenge.Identification;
 import io.github.schmolldechse.challenge.map.challenge.randomizer.modules.RandomBlockDrops;
 import io.github.schmolldechse.challenge.map.challenge.randomizer.modules.RandomCrafting;
 import io.github.schmolldechse.challenge.map.challenge.randomizer.modules.RandomEntities;
+import io.github.schmolldechse.challenge.map.challenge.randomizer.modules.RandomEntityDrops;
 import io.github.schmolldechse.challenge.module.Module;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -68,6 +69,7 @@ public class RandomizerChallenge extends Challenge implements Listener {
         this.moduleRegistry.register(new RandomBlockDrops(this));
         this.moduleRegistry.register(new RandomCrafting(this));
         this.moduleRegistry.register(new RandomEntities(this));
+        this.moduleRegistry.register(new RandomEntityDrops(this));
 
         this.randomizerInventory = new RandomizerInventory(this);
     }

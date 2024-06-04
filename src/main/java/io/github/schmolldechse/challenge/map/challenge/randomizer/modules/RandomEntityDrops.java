@@ -6,44 +6,52 @@ import io.github.schmolldechse.challenge.module.Module;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.Biome;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.loot.LootContext;
+import org.bukkit.loot.LootTable;
+import org.bukkit.loot.LootTables;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class RandomEntities extends Module<RandomizerChallenge> implements Listener {
+public class RandomEntityDrops extends Module<RandomizerChallenge> implements Listener {
 
-    private final Random random = new Random();
-
-    private Map<EntityType, EntityType> entitiesRandomizerMap = new HashMap<>();
+    private Map<EntityType, LootTable> entitiesRandomizerMap = new HashMap<>();
     private final List<EntityType> filteredEntityTypes;
+    private final List<LootTable> filteredLootTables;
 
-    public RandomEntities(RandomizerChallenge challenge) {
-        super(challenge, "randomizer_entities");
+    public RandomEntityDrops(RandomizerChallenge challenge) {
+        super(challenge, "randomizer_entity_drops");
 
         this.filteredEntityTypes = Stream.of(EntityType.values())
                 .filter(EntityType::isSpawnable)
                 .filter(EntityType::isAlive)
                 .filter(entityType -> !this.challenge.excludedEntities.contains(entityType))
-                .filter(entityType -> entityType != EntityType.ENDER_DRAGON)
-                .filter(entityType -> entityType != EntityType.WITHER)
-                .toList();
+                .collect(Collectors.toList());
+
+        this.filteredLootTables = Stream.of(LootTables.values())
+                .map(LootTables::getLootTable)
+                .filter(lootTable -> lootTable.getKey().getKey().startsWith("entities/"))
+                .collect(Collectors.toList());
 
         this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override
     public ItemStack getItemStack() {
-        return ItemBuilder.from(Material.CREEPER_HEAD)
+        return ItemBuilder.from(Material.GUNPOWDER)
                 .name(this.getDisplayName())
                 .lore(this.getDescription())
                 .pdc(persistentDataContainer -> persistentDataContainer.set(this.key, PersistentDataType.STRING, this.getIdentifierName()))
@@ -52,13 +60,13 @@ public class RandomEntities extends Module<RandomizerChallenge> implements Liste
 
     @Override
     public Component getDisplayName() {
-        return Component.text("Zufällige Entities", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
+        return Component.text("Drops aus Entities", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
     }
 
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.text("Beinhaltet " + this.entitiesRandomizerMap.size() + " Entities", NamedTextColor.GRAY),
+                Component.text("Beinhaltet " + this.entitiesRandomizerMap.size() + " Drops", NamedTextColor.GRAY),
                 Component.empty(),
                 Component.text("[Klick]", NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, true)
                         .append(Component.text(" zum (De-) Aktivieren", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)),
@@ -75,17 +83,12 @@ public class RandomEntities extends Module<RandomizerChallenge> implements Liste
 
         if (!this.active) return;
 
-        List<EntityType> copy = new ArrayList<>(this.filteredEntityTypes);
+        Collections.shuffle(this.filteredEntityTypes);
+        Collections.shuffle(this.filteredLootTables);
 
-        this.entitiesRandomizerMap = this.filteredEntityTypes.stream()
-                .collect(Collectors.toMap(
-                        entityType -> entityType,
-                        entityType -> {
-                            EntityType randomEntity = copy.get(this.random.nextInt(copy.size()));
-                            copy.remove(randomEntity);
-                            return randomEntity;
-                        }
-                ));
+        this.entitiesRandomizerMap = IntStream.range(0, this.filteredEntityTypes.size())
+                .boxed()
+                .collect(Collectors.toMap(this.filteredEntityTypes::get, this.filteredLootTables::get));
 
         this.plugin.getLogger().info("Shuffled " + this.getIdentifierName() + " with " + this.entitiesRandomizerMap.size() + " entities");
     }
@@ -95,7 +98,7 @@ public class RandomEntities extends Module<RandomizerChallenge> implements Liste
         Map<String, Object> data = new HashMap<>();
 
         List<List<String>> entitiesSerialized = this.entitiesRandomizerMap.entrySet().stream()
-                .map(entry -> Arrays.asList(entry.getKey().name(), entry.getValue().name()))
+                .map(entry -> Arrays.asList(entry.getKey().name(), entry.getValue().getKey().getKey()))
                 .toList();
         data.put("map", entitiesSerialized);
         data.put("active", this.active);
@@ -112,45 +115,28 @@ public class RandomEntities extends Module<RandomizerChallenge> implements Liste
             this.entitiesRandomizerMap = entitiesSerialized.stream()
                     .collect(Collectors.toMap(
                             entry -> EntityType.valueOf(entry.get(0)),
-                            entry -> EntityType.valueOf(entry.get(1))
+                            entry -> Bukkit.getLootTable(NamespacedKey.fromString(entry.get(1)))
                     ));
         }
     }
 
-    private int oceanEntityCount = 0;
-
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void execute(CreatureSpawnEvent event) {
+    public void execute(EntityDeathEvent event) {
         if (!this.challenge.isActive()) return;
         if (this.plugin.timerHandler.isPaused()) return;
 
         if (!this.active) return;
 
-        // Blocks entities that are spawned by plugins
-        if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) return;
-
         if (!this.entitiesRandomizerMap.containsKey(event.getEntityType())) return;
-        EntityType randomEntityType = this.entitiesRandomizerMap.get(event.getEntityType());
+        LootTable lootTable = this.entitiesRandomizerMap.get(event.getEntityType());
+        LootContext.Builder builder = new LootContext.Builder(event.getEntity().getLocation())
+                .lootedEntity(event.getEntity());
 
-        // prevent ocean being flooded by entities which causes lag
-        Biome biome = event.getLocation().getWorld().getBiome(event.getLocation().getBlockX(), event.getLocation().getBlockY(), event.getLocation().getBlockZ());
-        if (biome == Biome.OCEAN
-                || biome == Biome.FROZEN_OCEAN
-                || biome == Biome.DEEP_OCEAN
-                || biome == Biome.WARM_OCEAN
-                || biome == Biome.LUKEWARM_OCEAN
-                || biome == Biome.COLD_OCEAN
-                || biome == Biome.DEEP_LUKEWARM_OCEAN
-                || biome == Biome.DEEP_COLD_OCEAN
-                || biome == Biome.DEEP_FROZEN_OCEAN
-                || biome == Biome.RIVER
-                || biome == Biome.FROZEN_RIVER) {
-            this.oceanEntityCount++;
-            if (this.oceanEntityCount % 3 != 0) return;
-            this.oceanEntityCount = 0;
-        }
+        if (event.getEntity().getKiller() != null) builder.killer(event.getEntity().getKiller());
 
-        event.getLocation().getWorld().spawnEntity(event.getLocation(), randomEntityType, CreatureSpawnEvent.SpawnReason.CUSTOM);
-        event.setCancelled(true);
+        event.getDrops().clear();
+
+        Collection<ItemStack> loot = lootTable.populateLoot(ThreadLocalRandom.current(), builder.build());
+        event.getDrops().addAll(loot);
     }
 }
