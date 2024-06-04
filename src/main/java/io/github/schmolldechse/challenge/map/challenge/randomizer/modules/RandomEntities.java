@@ -1,5 +1,6 @@
 package io.github.schmolldechse.challenge.map.challenge.randomizer.modules;
 
+import com.google.inject.Inject;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.challenge.map.challenge.randomizer.RandomizerChallenge;
 import io.github.schmolldechse.challenge.module.Module;
@@ -27,6 +28,7 @@ public class RandomEntities extends Module<RandomizerChallenge> implements Liste
     private Map<EntityType, EntityType> entitiesRandomizerMap = new HashMap<>();
     private final List<EntityType> filteredEntityTypes;
 
+    @Inject
     public RandomEntities(RandomizerChallenge challenge) {
         super(challenge, "randomizer_entities");
 
@@ -34,6 +36,8 @@ public class RandomEntities extends Module<RandomizerChallenge> implements Liste
                 .filter(EntityType::isSpawnable)
                 .filter(EntityType::isAlive)
                 .filter(entityType -> !this.challenge.excludedEntities.contains(entityType))
+                .filter(entityType -> entityType != EntityType.ENDER_DRAGON)
+                .filter(entityType -> entityType != EntityType.WITHER)
                 .toList();
 
         this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);

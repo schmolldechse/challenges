@@ -55,9 +55,8 @@ public class RandomizerChallenge extends Challenge implements Listener {
             EntityType.EVOKER_FANGS, EntityType.LLAMA_SPIT, EntityType.GLOW_ITEM_FRAME, EntityType.MARKER,
             EntityType.BLOCK_DISPLAY, EntityType.INTERACTION, EntityType.ITEM_DISPLAY, EntityType.TEXT_DISPLAY,
             EntityType.BREEZE, EntityType.WIND_CHARGE, EntityType.FISHING_HOOK, EntityType.LIGHTNING,
-            EntityType.PLAYER, EntityType.UNKNOWN, EntityType.ENDER_DRAGON, EntityType.MINECART,
-            EntityType.MINECART_CHEST, EntityType.MINECART_FURNACE, EntityType.MINECART_TNT, EntityType.MINECART_HOPPER,
-            EntityType.MINECART_MOB_SPAWNER, EntityType.WITHER
+            EntityType.PLAYER, EntityType.UNKNOWN, EntityType.MINECART, EntityType.MINECART_CHEST,
+            EntityType.MINECART_FURNACE, EntityType.MINECART_TNT, EntityType.MINECART_HOPPER, EntityType.MINECART_MOB_SPAWNER
     );
 
     private final RandomizerInventory randomizerInventory;
