@@ -93,7 +93,9 @@ public abstract class Challenge implements Listener {
         if (this.plugin.timerHandler.isPaused()) return;
 
         this.plugin.timerHandler.pause();
-        this.onPause();
+        this.plugin.challengeHandler.registeredChallenges.values().stream()
+                .filter(Challenge::isActive)
+                .forEach(Challenge::onPause);
 
         Duration duration = Duration.ofSeconds(this.plugin.timerHandler.time);
         String timeFormatted = this.plugin.timerHandler.format(duration);
@@ -107,7 +109,9 @@ public abstract class Challenge implements Listener {
         if (this.plugin.timerHandler.isPaused()) return;
 
         this.plugin.timerHandler.pause();
-        this.onPause();
+        this.plugin.challengeHandler.registeredChallenges.values().stream()
+                .filter(Challenge::isActive)
+                .forEach(Challenge::onPause);
 
         Bukkit.getOnlinePlayers().forEach(player -> {
             if (player.getGameMode() != GameMode.SURVIVAL) return;
