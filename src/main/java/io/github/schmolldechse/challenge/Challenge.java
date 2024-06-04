@@ -150,6 +150,7 @@ public abstract class Challenge implements Listener {
     }
 
     public void onActivate() {
+        // resume challenge if timerHandler already started
         if (!this.plugin.timerHandler.isPaused()) this.onResume();
     }
 
