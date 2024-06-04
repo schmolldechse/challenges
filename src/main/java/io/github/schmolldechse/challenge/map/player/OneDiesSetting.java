@@ -50,16 +50,12 @@ public class OneDiesSetting extends Challenge implements Listener {
 
     @Override
     public List<Component> getDescription() {
-        Component activated = this.active
-                ? Component.text("Aktiviert", NamedTextColor.GREEN)
-                : Component.text("Deaktiviert", NamedTextColor.RED);
-
         return Arrays.asList(
                 Component.empty(),
                 Component.text("Sobald ein Spieler stirbt, ist", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.text("die Challenge fehlgeschlagen", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.empty(),
-                activated
+                this.activationComponent()
         );
     }
 

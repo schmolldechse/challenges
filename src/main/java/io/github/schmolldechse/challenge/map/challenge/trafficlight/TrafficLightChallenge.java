@@ -56,10 +56,6 @@ public class TrafficLightChallenge extends Challenge implements Listener {
 
     @Override
     public ItemStack getItemStack() {
-        Component activated = this.active
-                ? Component.text("Aktiviert", NamedTextColor.GREEN)
-                : Component.text("Deaktiviert", NamedTextColor.RED);
-
         return ItemBuilder.from(Material.GREEN_CONCRETE)
                 .name(this.getDisplayName())
                 .lore(Arrays.asList(
@@ -68,7 +64,7 @@ public class TrafficLightChallenge extends Challenge implements Listener {
                         Component.text("denn sobald sie auf gelb springt, solltest du", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                         Component.text("lieber stehen bleiben!", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                         Component.empty(),
-                        activated,
+                        this.activationComponent(),
                         Component.empty(),
                         Component.text("[Rechtsklick]", NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, true)
                                 .append(Component.text(" zum Bearbeiten", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false))

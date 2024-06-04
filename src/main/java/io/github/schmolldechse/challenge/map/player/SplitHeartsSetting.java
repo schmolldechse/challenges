@@ -54,17 +54,13 @@ public class SplitHeartsSetting extends Challenge implements Listener {
 
     @Override
     public List<Component> getDescription() {
-        Component activated = this.active
-                ? Component.text("Aktiviert", NamedTextColor.GREEN)
-                : Component.text("Deaktiviert", NamedTextColor.RED);
-
         return Arrays.asList(
                 Component.empty(),
                 Component.text("Passt auf, diesesmal teilt ihr euch", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.text("eure Herzen! Nimmt jemand Schaden, dann", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.text("erleiden alle anderen Spieler den gleichen Schaden", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.empty(),
-                activated
+                this.activationComponent()
         );
     }
 

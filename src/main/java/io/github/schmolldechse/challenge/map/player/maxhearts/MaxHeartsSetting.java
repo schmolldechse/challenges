@@ -58,16 +58,12 @@ public class MaxHeartsSetting extends Challenge implements Listener {
 
     @Override
     public List<Component> getDescription() {
-        Component activated = this.active
-                ? Component.text("Aktiviert", NamedTextColor.GREEN)
-                : Component.text("Deaktiviert", NamedTextColor.RED);
-
         return Arrays.asList(
                 Component.empty(),
                 Component.text("Setze die maximalen Herzen fest,", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.text("die ein Spieler besitzen kann", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.empty(),
-                activated,
+                this.activationComponent(),
                 Component.empty(),
                 Component.text("[Rechtsklick]", NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, true)
                         .append(Component.text(" zum Bearbeiten", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false))

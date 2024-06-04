@@ -62,6 +62,16 @@ public abstract class Challenge implements Listener {
     public abstract List<Component> getDescription();
 
     /**
+     * Returns a component which represents the activation state of the challenge
+     * @return {@link Component} representing the activation state
+     */
+    protected Component activationComponent() {
+        return this.active
+                ? Component.text("Aktiviert", NamedTextColor.GREEN)
+                : Component.text("Deaktiviert", NamedTextColor.RED);
+    }
+
+    /**
      * Saves challenge data which can be applied after a restart
      * @return map of saved data
      */

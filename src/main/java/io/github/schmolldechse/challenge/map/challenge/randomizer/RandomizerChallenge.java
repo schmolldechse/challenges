@@ -95,10 +95,6 @@ public class RandomizerChallenge extends Challenge implements Listener {
 
     @Override
     public List<Component> getDescription() {
-        Component activated = this.active
-                ? Component.text("Aktiviert", NamedTextColor.GREEN)
-                : Component.text("Deaktiviert", NamedTextColor.RED);
-
         return Arrays.asList(
                 Component.empty(),
                 Component.text("Irgendwie kommt hier nicht das richtige raus?", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
@@ -106,7 +102,7 @@ public class RandomizerChallenge extends Challenge implements Listener {
                 Component.text("Entities und Craften lassen nun etwas völlig", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.text("erscheinen, als gewohnt", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.empty(),
-                activated,
+                this.activationComponent(),
                 Component.empty(),
                 Component.text("[Rechtsklick]", NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, true)
                         .append(Component.text(" zum Bearbeiten", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false))

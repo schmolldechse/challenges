@@ -47,16 +47,12 @@ public class EnderDragonCondition extends Challenge implements Listener {
 
     @Override
     public List<Component> getDescription() {
-        Component activated = this.active
-                ? Component.text("Aktiviert", NamedTextColor.GREEN)
-                : Component.text("Deaktiviert", NamedTextColor.RED);
-
         return Arrays.asList(
                 Component.empty(),
                 Component.text("Die Challenge gilt als geschlagen,", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.text("wenn der Ender Drache geschlagen wird", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.empty(),
-                activated
+                this.activationComponent()
         );
     }
 
