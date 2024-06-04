@@ -9,12 +9,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
-import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
@@ -155,17 +153,6 @@ public class TrafficLightChallenge extends Challenge implements Listener {
         if (this.bossBar == null) return;
 
         event.getPlayer().showBossBar(this.bossBar);
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void execute(EntityDeathEvent event) {
-        if (!this.active) return;
-        if (this.plugin.timerHandler.isPaused()) return;
-
-        if (!(event.getEntity() instanceof EnderDragon)) return;
-
-        this.success();
-        this.timer.pause(); // shutdown trafficlight timer
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
