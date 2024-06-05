@@ -21,20 +21,20 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 
-public class MaxHeartsSetting extends Challenge implements Listener {
+public class MaxHealthSetting extends Challenge implements Listener {
 
     //TODO: fix display
-    public double maxHearts = 20.0D;
+    public double maxHealth = 20.0D;
 
-    private final MaxHeartsInventory settingsInventory;
+    private final MaxHealthInventory settingsInventory;
 
     @Inject
-    public MaxHeartsSetting() {
-        super("setting_maxhearts");
+    public MaxHealthSetting() {
+        super("setting_maxhealth");
 
         this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
 
-        this.settingsInventory = new MaxHeartsInventory(this);
+        this.settingsInventory = new MaxHealthInventory(this);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class MaxHeartsSetting extends Challenge implements Listener {
 
     @Override
     public void onActivate() {
-        this.updateHearts(this.maxHearts);
+        this.updateHearts(this.maxHealth);
     }
 
     @Override
@@ -83,13 +83,14 @@ public class MaxHeartsSetting extends Challenge implements Listener {
     @Override
     public Map<String, Object> save() {
         Map<String, Object> data = new HashMap<>();
-        data.put("maxHearts", this.maxHearts);
+        data.put("maxHealth", this.maxHealth);
         return data;
     }
 
     @Override
     public void append(Map<String, Object> data) {
-        this.maxHearts = (double) data.get("maxHearts");
+        this.maxHealth = (double) data.get("maxHealth");
+        this.updateHearts(this.maxHealth);
     }
 
     @Override
@@ -102,7 +103,7 @@ public class MaxHeartsSetting extends Challenge implements Listener {
         if (!this.active) return;
         if (this.plugin.timerHandler.isPaused()) return;
 
-        event.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(this.maxHearts);
+        event.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(this.maxHealth);
     }
 
     public void updateHearts(double hearts) {
@@ -115,8 +116,8 @@ public class MaxHeartsSetting extends Challenge implements Listener {
     }
 
     public List<Component> heartDisplay() {
-        int fullHearts = (int) maxHearts / 2;
-        boolean halfHeart = maxHearts % 2 != 0;
+        int fullHearts = (int) maxHealth / 2;
+        boolean halfHeart = maxHealth % 2 != 0;
 
         List<Component> components = new ArrayList<>();
         Component line = Component.empty();
