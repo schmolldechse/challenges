@@ -1,6 +1,7 @@
 package io.github.schmolldechse.challenge;
 
 import io.github.schmolldechse.Plugin;
+import io.github.schmolldechse.challenge.module.Module;
 import io.github.schmolldechse.challenge.module.ModuleRegistry;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -158,7 +159,11 @@ public abstract class Challenge implements Listener {
         if (!this.plugin.timerHandler.isPaused()) this.onResume();
     }
 
-    public void onDeactivate() { }
+    public void onDeactivate() {
+        this.moduleRegistry.getModules().stream()
+                .filter(Module::isActive)
+                .forEach(Module::deactivate);
+    }
 
     public void onPause() { }
 
