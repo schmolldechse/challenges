@@ -4,10 +4,7 @@ import com.google.inject.Inject;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.challenge.Challenge;
 import io.github.schmolldechse.challenge.Identification;
-import io.github.schmolldechse.challenge.map.challenge.randomizer.modules.RandomBlockDrops;
-import io.github.schmolldechse.challenge.map.challenge.randomizer.modules.RandomCrafting;
-import io.github.schmolldechse.challenge.map.challenge.randomizer.modules.RandomEntities;
-import io.github.schmolldechse.challenge.map.challenge.randomizer.modules.RandomEntityDrops;
+import io.github.schmolldechse.challenge.map.challenge.randomizer.modules.*;
 import io.github.schmolldechse.challenge.module.Module;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -17,6 +14,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.loot.LootTables;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
@@ -60,6 +58,14 @@ public class RandomizerChallenge extends Challenge implements Listener {
             EntityType.MINECART_FURNACE, EntityType.MINECART_TNT, EntityType.MINECART_HOPPER, EntityType.MINECART_MOB_SPAWNER
     );
 
+    //TODO: remove list in 1.21 again
+    public final List<LootTables> excludedLootTables = List.of(
+            LootTables.TRIAL_CHAMBERS_REWARD, LootTables.TRIAL_CHAMBERS_SUPPLY, LootTables.TRIAL_CHAMBERS_CORRIDOR,
+            LootTables.TRIAL_CHAMBERS_INTERSECTION, LootTables.TRIAL_CHAMBERS_INTERSECTION_BARREL, LootTables.TRIAL_CHAMBERS_ENTRANCE,
+            LootTables.TRIAL_CHAMBERS_CORRIDOR_DISPENSER, LootTables.TRIAL_CHAMBERS_CHAMBER_DISPENSER, LootTables.TRIAL_CHAMBERS_WATER_DISPENSER,
+            LootTables.TRIAL_CHAMBERS_CORRIDOR_POT
+    );
+
     private final RandomizerInventory randomizerInventory;
 
     @Inject
@@ -67,6 +73,7 @@ public class RandomizerChallenge extends Challenge implements Listener {
         super("challenge_randomizer");
 
         this.moduleRegistry.register(new RandomBlockDrops(this));
+        this.moduleRegistry.register(new RandomChestLootTables(this));
         this.moduleRegistry.register(new RandomCrafting(this));
         this.moduleRegistry.register(new RandomEntities(this));
         this.moduleRegistry.register(new RandomEntityDrops(this));

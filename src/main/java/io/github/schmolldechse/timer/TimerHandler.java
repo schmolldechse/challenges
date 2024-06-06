@@ -2,6 +2,7 @@ package io.github.schmolldechse.timer;
 
 import com.google.inject.Inject;
 import io.github.schmolldechse.Plugin;
+import io.github.schmolldechse.challenge.Challenge;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -50,9 +51,9 @@ public class TimerHandler {
 
         this.isStarted = true;
 
-        this.plugin.challengeHandler.registeredChallenges.entrySet().stream()
-                .filter(entry -> entry.getValue().isActive())
-                .forEach(entry -> entry.getValue().onResume());
+        this.plugin.challengeHandler.registeredChallenges.values().stream()
+                .filter(Challenge::isActive)
+                .forEach(Challenge::onResume);
 
         this.timerService = Executors.newSingleThreadScheduledExecutor();
         this.timerService.scheduleAtFixedRate(() -> {
@@ -65,9 +66,9 @@ public class TimerHandler {
         this.timerService.shutdownNow();
         this.isStarted = false;
 
-        this.plugin.challengeHandler.registeredChallenges.entrySet().stream()
-                .filter(entry -> entry.getValue().isActive())
-                .forEach(entry -> entry.getValue().onPause());
+        this.plugin.challengeHandler.registeredChallenges.values().stream()
+                .filter(Challenge::isActive)
+                .forEach(Challenge::onPause);
     }
 
     public boolean isPaused() {

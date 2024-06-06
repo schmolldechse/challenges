@@ -58,6 +58,11 @@ public class RandomEntities extends Module<RandomizerChallenge> implements Liste
     @Override
     public List<Component> getDescription() {
         return List.of(
+                Component.text("Achtung ", NamedTextColor.DARK_RED).decoration(TextDecoration.ITALIC, true).decoration(TextDecoration.BOLD, true)
+                        .append(Component.text("das ist SEHR unbalanced", NamedTextColor.GRAY)
+                                .decoration(TextDecoration.ITALIC, false)
+                                .decoration(TextDecoration.BOLD, false)
+                        ),
                 Component.text("Beinhaltet " + this.entitiesRandomizerMap.size() + " Entities", NamedTextColor.GRAY),
                 Component.empty(),
                 Component.text("[Klick]", NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, true)
@@ -117,7 +122,7 @@ public class RandomEntities extends Module<RandomizerChallenge> implements Liste
         }
     }
 
-    private int oceanEntityCount = 0;
+    private int entityFloodCount = 0;
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void execute(CreatureSpawnEvent event) {
@@ -126,7 +131,7 @@ public class RandomEntities extends Module<RandomizerChallenge> implements Liste
 
         if (!this.active) return;
 
-        // Blocks entities that are spawned by plugins
+        // blocks entities spawned by plugins, so they will not end in a loop
         if (event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.CUSTOM) return;
 
         if (!this.entitiesRandomizerMap.containsKey(event.getEntityType())) return;
@@ -145,9 +150,9 @@ public class RandomEntities extends Module<RandomizerChallenge> implements Liste
                 || biome == Biome.DEEP_FROZEN_OCEAN
                 || biome == Biome.RIVER
                 || biome == Biome.FROZEN_RIVER) {
-            this.oceanEntityCount++;
-            if (this.oceanEntityCount % 3 != 0) return;
-            this.oceanEntityCount = 0;
+            this.entityFloodCount++;
+            if (this.entityFloodCount % 3 != 0) return;
+            this.entityFloodCount = 0;
         }
 
         event.getLocation().getWorld().spawnEntity(event.getLocation(), randomEntityType, CreatureSpawnEvent.SpawnReason.CUSTOM);
