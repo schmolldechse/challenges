@@ -1,18 +1,18 @@
-package io.github.schmolldechse.challenge.map.player;
+package io.github.schmolldechse.challenge.map.world;
 
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.challenge.Challenge;
 import io.github.schmolldechse.challenge.Identification;
-import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -20,22 +20,22 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class HotbarSetting extends Challenge implements Listener {
+public class HardcoreSetting extends Challenge implements Listener {
 
-    public HotbarSetting() {
-        super("setting_hotbar");
+    public HardcoreSetting() {
+        super("setting_hardcore");
 
         this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override
     public Identification challengeIdentification() {
-        return Identification.PLAYER;
+        return Identification.WORLD;
     }
 
     @Override
     public ItemStack getItemStack() {
-        return ItemBuilder.from(Material.CHEST)
+        return ItemBuilder.from(Material.GOLDEN_APPLE)
                 .name(this.getDisplayName())
                 .lore(this.getDescription())
                 .pdc(persistentDataContainer -> persistentDataContainer.set(this.key, PersistentDataType.STRING, this.getIdentifierName()))
@@ -44,14 +44,15 @@ public class HotbarSetting extends Challenge implements Listener {
 
     @Override
     public Component getDisplayName() {
-        return Component.text("Nur Hotbar", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
+        return Component.text("Hardcore", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
     }
 
     @Override
     public List<Component> getDescription() {
         return Arrays.asList(
                 Component.empty(),
-                Component.text("Nur die Hotbar kann verwendet werden!", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
+                Component.text("Regeneration von Herzen ist nur", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
+                Component.text("noch durch Goldene Äpfel möglich", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.empty(),
                 this.activationComponent()
         );
@@ -63,20 +64,14 @@ public class HotbarSetting extends Challenge implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void execute(PlayerInventorySlotChangeEvent event) {
+    public void execute(EntityRegainHealthEvent event) {
         if (!this.active) return;
         if (this.plugin.timerHandler.isPaused()) return;
 
-        if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) return;
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (player.getGameMode() != GameMode.SURVIVAL) return;
 
-        // 1. slot starts with 0, so last is 8
-        if (event.getSlot() < 9) return;
-
-        Bukkit.broadcast(
-                Component.text(event.getPlayer().getName(), NamedTextColor.GREEN)
-                        .append(Component.text(" hatte ein Item außerhalb der Hotbar", NamedTextColor.RED))
-        );
-
-        this.fail();
+        if (event.getRegainReason() != EntityRegainHealthEvent.RegainReason.SATIATED) return;
+        event.setCancelled(true);
     }
 }
