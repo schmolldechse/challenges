@@ -12,14 +12,13 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootTables;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 
-public class RandomizerChallenge extends Challenge implements Listener {
+public class RandomizerChallenge extends Challenge {
 
     //TODO: remove list in 1.21 again
     public final List<Material> excludedMaterials = List.of(

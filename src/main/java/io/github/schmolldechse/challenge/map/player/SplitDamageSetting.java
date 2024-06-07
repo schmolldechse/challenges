@@ -22,13 +22,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SplitHeartsSetting extends Challenge implements Listener {
+public class SplitDamageSetting extends Challenge implements Listener {
 
     private boolean isApplyingDamage = false;
 
     @Inject
-    public SplitHeartsSetting() {
-        super("setting_splithearts");
+    public SplitDamageSetting() {
+        super("setting_splitdamage");
 
         this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
@@ -49,7 +49,7 @@ public class SplitHeartsSetting extends Challenge implements Listener {
 
     @Override
     public Component getDisplayName() {
-        return Component.text("Geteilte Herzen", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
+        return Component.text("Geteilter Schaden", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false);
     }
 
     @Override
@@ -57,8 +57,8 @@ public class SplitHeartsSetting extends Challenge implements Listener {
         return Arrays.asList(
                 Component.empty(),
                 Component.text("Passt auf, diesesmal teilt ihr euch", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
-                Component.text("eure Herzen! Nimmt jemand Schaden, dann", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
-                Component.text("erleiden alle anderen Spieler den gleichen Schaden", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
+                Component.text("euren Schaden! Nimmt jemand Schaden, dann", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
+                Component.text("erleiden alle die gleiche Anzahl Schaden", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
                 Component.empty(),
                 this.activationComponent()
         );
@@ -66,7 +66,7 @@ public class SplitHeartsSetting extends Challenge implements Listener {
 
     @Override
     public Map<String, Object> save() {
-        return Map.of();
+        return super.save();
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

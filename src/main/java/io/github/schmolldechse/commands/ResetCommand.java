@@ -22,7 +22,7 @@ public class ResetCommand {
 
     /**
      * Deletes all registered world folder and restarts the server
-     * When specified, it copies the current {@link io.github.schmolldechse.challenge.ChallengeHandler settings}
+     * When specified, it copies the current {@link io.github.schmolldechse.challenge.ChallengeHandler} settings
      *
      * /reset
      * /reset copy

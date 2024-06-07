@@ -56,17 +56,7 @@ public class TrafficLightChallenge extends Challenge implements Listener {
     public ItemStack getItemStack() {
         return ItemBuilder.from(Material.GREEN_CONCRETE)
                 .name(this.getDisplayName())
-                .lore(Arrays.asList(
-                        Component.empty(),
-                        Component.text("Aufgepasst, die Ampel spielt verrückt! Sei achtsam,", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
-                        Component.text("denn sobald sie auf gelb springt, solltest du", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
-                        Component.text("lieber stehen bleiben!", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
-                        Component.empty(),
-                        this.activationComponent(),
-                        Component.empty(),
-                        Component.text("[Rechtsklick]", NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, true)
-                                .append(Component.text(" zum Bearbeiten", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false))
-                ))
+                .lore(this.getDescription())
                 .pdc(persistentDataContainer -> persistentDataContainer.set(this.key, PersistentDataType.STRING, this.getIdentifierName()))
                 .build();
     }
@@ -80,9 +70,14 @@ public class TrafficLightChallenge extends Challenge implements Listener {
     public List<Component> getDescription() {
         return Arrays.asList(
                 Component.empty(),
-                Component.text("Ziel: ", NamedTextColor.WHITE).append(Component.text("Enderdrachen besiegen", NamedTextColor.YELLOW)).decoration(TextDecoration.ITALIC, true),
-                Component.text("Aufgepasst! Grünes Licht bedeutet Bewegung,", NamedTextColor.WHITE),
-                Component.text("aber bei Rot ist Stillstand geboten.", NamedTextColor.WHITE)
+                Component.text("Aufgepasst, die Ampel spielt verrückt! Sei achtsam,", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
+                Component.text("denn sobald sie auf gelb springt, solltest du", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
+                Component.text("lieber stehen bleiben!", NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false),
+                Component.empty(),
+                this.activationComponent(),
+                Component.empty(),
+                Component.text("[Rechtsklick]", NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, true)
+                        .append(Component.text(" zum Bearbeiten", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false))
         );
     }
 
