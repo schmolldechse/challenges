@@ -18,7 +18,6 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class OneDiesSetting extends Challenge implements Listener {
 
@@ -57,11 +56,6 @@ public class OneDiesSetting extends Challenge implements Listener {
                 Component.empty(),
                 this.activationComponent()
         );
-    }
-
-    @Override
-    public Map<String, Object> save() {
-        return Map.of();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

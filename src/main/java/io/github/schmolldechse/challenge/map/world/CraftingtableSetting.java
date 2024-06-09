@@ -21,7 +21,6 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class CraftingtableSetting extends Challenge implements Listener {
 
@@ -60,11 +59,6 @@ public class CraftingtableSetting extends Challenge implements Listener {
                 Component.empty(),
                 this.activationComponent()
         );
-    }
-
-    @Override
-    public Map<String, Object> save() {
-        return Map.of();
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

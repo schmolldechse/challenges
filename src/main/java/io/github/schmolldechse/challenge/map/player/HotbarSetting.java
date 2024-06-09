@@ -18,7 +18,6 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 public class HotbarSetting extends Challenge implements Listener {
 
@@ -55,11 +54,6 @@ public class HotbarSetting extends Challenge implements Listener {
                 Component.empty(),
                 this.activationComponent()
         );
-    }
-
-    @Override
-    public Map<String, Object> save() {
-        return super.save();
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
