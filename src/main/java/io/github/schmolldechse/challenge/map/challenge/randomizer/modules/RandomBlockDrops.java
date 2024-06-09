@@ -1,8 +1,8 @@
 package io.github.schmolldechse.challenge.map.challenge.randomizer.modules;
 
 import dev.triumphteam.gui.builder.item.ItemBuilder;
-import io.github.schmolldechse.challenge.module.Module;
 import io.github.schmolldechse.challenge.map.challenge.randomizer.RandomizerChallenge;
+import io.github.schmolldechse.challenge.module.Module;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -56,7 +56,7 @@ public class RandomBlockDrops extends Module<RandomizerChallenge> implements Lis
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.text("Beinhaltet " + this.blocksRandomizerMap.size() + " Drops", NamedTextColor.GRAY),
+                Component.text("Beinhaltet " + this.filteredItemBlockList.size() + " Drops", NamedTextColor.GRAY),
                 Component.empty(),
                 Component.text("[Klick]", NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, true)
                         .append(Component.text(" zum (De-) Aktivieren", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)),
@@ -96,15 +96,12 @@ public class RandomBlockDrops extends Module<RandomizerChallenge> implements Lis
                 .map(entry -> Arrays.asList(entry.getKey().name(), entry.getValue().name()))
                 .toList();
         data.put("map", blocksSerialized);
-        data.put("active", this.active);
 
         return data;
     }
 
     @Override
     public void append(Map<String, Object> data) {
-        if (data.containsKey("active")) this.active = (boolean) data.get("active");
-
         if (data.containsKey("map")) {
             List<List<String>> blocksSerialized = (List<List<String>>) data.get("map");
             this.blocksRandomizerMap = blocksSerialized.stream()

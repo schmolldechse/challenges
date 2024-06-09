@@ -6,7 +6,9 @@ import io.github.schmolldechse.misc.Reflection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class ChallengeHandler {
 

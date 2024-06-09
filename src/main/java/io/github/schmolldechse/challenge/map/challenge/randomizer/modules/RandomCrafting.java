@@ -56,7 +56,7 @@ public class RandomCrafting extends Module<RandomizerChallenge> implements Liste
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.text("Beinhaltet " + this.craftingRandomizerMap.size() + " Items", NamedTextColor.GRAY),
+                Component.text("Beinhaltet " + this.filteredItemList.size() + " Items", NamedTextColor.GRAY),
                 Component.empty(),
                 Component.text("[Klick]", NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, true)
                         .append(Component.text(" zum (De-) Aktivieren", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)),
@@ -96,15 +96,12 @@ public class RandomCrafting extends Module<RandomizerChallenge> implements Liste
                 .map(entry -> Arrays.asList(entry.getKey().name(), entry.getValue().name()))
                 .toList();
         data.put("map", itemsSerialized);
-        data.put("active", this.active);
 
         return data;
     }
 
     @Override
     public void append(Map<String, Object> data) {
-        if (data.containsKey("active")) this.active = (boolean) data.get("active");
-
         if (data.containsKey("map")) {
             List<List<String>> itemsSerialized = (List<List<String>>) data.get("map");
             this.craftingRandomizerMap = itemsSerialized.stream()

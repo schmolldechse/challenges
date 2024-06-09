@@ -66,7 +66,7 @@ public class RandomEntityDrops extends Module<RandomizerChallenge> implements Li
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.text("Beinhaltet " + this.entitiesRandomizerMap.size() + " Drops", NamedTextColor.GRAY),
+                Component.text("Beinhaltet " + this.filteredLootTables.size() + " Drops", NamedTextColor.GRAY),
                 Component.empty(),
                 Component.text("[Klick]", NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, true)
                         .append(Component.text(" zum (De-) Aktivieren", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)),
@@ -101,15 +101,12 @@ public class RandomEntityDrops extends Module<RandomizerChallenge> implements Li
                 .map(entry -> Arrays.asList(entry.getKey().name(), entry.getValue().getKey().getKey()))
                 .toList();
         data.put("map", entitiesSerialized);
-        data.put("active", this.active);
 
         return data;
     }
 
     @Override
     public void append(Map<String, Object> data) {
-        if (data.containsKey("active")) this.active = (boolean) data.get("active");
-
         if (data.containsKey("map")) {
             List<List<String>> entitiesSerialized = (List<List<String>>) data.get("map");
             this.entitiesRandomizerMap = entitiesSerialized.stream()
