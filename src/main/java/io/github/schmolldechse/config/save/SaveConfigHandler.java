@@ -1,11 +1,10 @@
 package io.github.schmolldechse.config.save;
 
 import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.inject.Inject;
 import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.challenge.Challenge;
+import io.github.schmolldechse.team.Team;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -14,15 +13,13 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SaveConfigHandler {
 
     private final Plugin plugin;
 
     private final File path;
-    private final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @Inject
     public SaveConfigHandler() {
@@ -38,11 +35,32 @@ public class SaveConfigHandler {
             String json = new String(bytes, StandardCharsets.UTF_8);
 
             Type type = new TypeToken<Map<String, Object>>(){}.getType();
-            Map<String, Object> data = this.GSON.fromJson(json, type);
+            Map<String, Object> data = this.plugin.GSON.fromJson(json, type);
+
+            // team json object
+            Type teamType = new TypeToken<List<Map<String, Object>>>(){}.getType();
+            List<Map<String, Object>> teamData = this.plugin.GSON.fromJson(this.plugin.GSON.toJson(data.get("teams")), teamType);
+            teamData.forEach(teamObject -> {
+                String name = (String) teamObject.get("name");
+                if (this.plugin.teamHandler.team(name) != null) return;
+                Team team = new Team(name);
+
+                // update members
+                Type uuidsType = new TypeToken<List<String>>(){}.getType();
+                List<String> uuids = this.plugin.GSON.fromJson(this.plugin.GSON.toJson(teamObject.get("uuids")), uuidsType);
+                uuids.forEach(uuid -> team.addMember(UUID.fromString(uuid)));
+
+                // update data
+                Type dataType = new TypeToken<Map<String, Object>>(){}.getType();
+                Map<String, Object> dataMap = this.plugin.GSON.fromJson(this.plugin.GSON.toJson(teamObject.get("data")), dataType);
+                team.getData().putAll(dataMap);
+
+                this.plugin.teamHandler.register(team);
+            });
 
             // challenge json object
             Type challengeType = new TypeToken<Map<String, Map<String, Object>>>(){}.getType();
-            Map<String, Map<String, Object>> challengeData = this.GSON.fromJson(this.GSON.toJson(data.get("challenges")), challengeType);
+            Map<String, Map<String, Object>> challengeData = this.plugin.GSON.fromJson(this.plugin.GSON.toJson(data.get("challenges")), challengeType);
             challengeData.forEach((key, value) -> {
                 Challenge challenge = this.plugin.challengeHandler.getChallenge(key);
                 if (challenge == null) return;
@@ -54,7 +72,7 @@ public class SaveConfigHandler {
 
             // timer json object
             Type timerType = new TypeToken<Map<String, Object>>(){}.getType();
-            Map<String, Object> timerData = this.GSON.fromJson(this.GSON.toJson(data.get("timer")), timerType);
+            Map<String, Object> timerData = this.plugin.GSON.fromJson(this.plugin.GSON.toJson(data.get("timer")), timerType);
             this.plugin.timerHandler.time = ((Number) timerData.get("time")).intValue();
             this.plugin.timerHandler.reverse = (boolean) timerData.get("reverse");
 
@@ -80,7 +98,13 @@ public class SaveConfigHandler {
                 "reverse", this.plugin.timerHandler.reverse
         ));
 
-        String json = this.GSON.toJson(data);
+        // Saving team data
+        List<Map<String, Object>> teamData = new ArrayList<>();
+        this.plugin.teamHandler.getRegisteredTeams()
+                .forEach(entry -> teamData.add(entry.save()));
+        data.put("teams", teamData);
+
+        String json = this.plugin.GSON.toJson(data);
 
         try {
             Files.writeString(Paths.get(this.path.toURI()), json);

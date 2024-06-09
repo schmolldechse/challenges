@@ -1,5 +1,7 @@
 package io.github.schmolldechse;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -14,6 +16,7 @@ import io.github.schmolldechse.inventory.*;
 import io.github.schmolldechse.listener.PlayerJoinListener;
 import io.github.schmolldechse.listener.PlayerMoveListener;
 import io.github.schmolldechse.listener.PlayerResourcePackStatusListener;
+import io.github.schmolldechse.team.TeamHandler;
 import io.github.schmolldechse.timer.TimerHandler;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -33,6 +36,7 @@ public final class Plugin extends JavaPlugin {
     @Inject public TimerHandler timerHandler;
     @Inject public ChallengeHandler challengeHandler;
     @Inject public SaveConfigHandler saveConfigHandler;
+    @Inject public TeamHandler teamHandler;
 
     public boolean MOVEMENT_ALLOWED = true;
     public String RESET_TYPE = "RESTART";
@@ -50,6 +54,8 @@ public final class Plugin extends JavaPlugin {
     public ChallengeInventory challengeInventory;
     public PlayerInventory playerInventory;
     public WorldInventory worldInventory;
+
+    public final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @Override
     public void onLoad() {

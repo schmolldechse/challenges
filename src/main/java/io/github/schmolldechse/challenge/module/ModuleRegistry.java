@@ -1,6 +1,7 @@
 package io.github.schmolldechse.challenge.module;
 
 import io.github.schmolldechse.challenge.Challenge;
+
 import java.util.ArrayList;
 import java.util.List;
 

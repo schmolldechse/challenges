@@ -25,7 +25,7 @@ public class ResetCommand {
      * When specified, it copies the current {@link io.github.schmolldechse.challenge.ChallengeHandler} settings
      *
      * /reset
-     * /reset copy
+     * /reset -c | -copy
      */
 
     private final Plugin plugin;
@@ -36,7 +36,7 @@ public class ResetCommand {
 
     public void registerCommand() {
         new CommandTree("reset")
-                .then(new LiteralArgument("copy")
+                .then(new LiteralArgument("-copy", "-c")
                         .executes((sender, args) -> {
                             this.prepare();
                             this.executeRestart();

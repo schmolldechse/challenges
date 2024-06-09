@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TimerHandler {
 
-    public int time;
+    public int time, elapsed;
     public boolean reverse;
     public boolean isStarted = false;
 
@@ -59,6 +59,8 @@ public class TimerHandler {
         this.timerService.scheduleAtFixedRate(() -> {
             if (this.time <= 0 && this.reverse) this.pause();
             else this.time += this.reverse ? -1 : +1;
+
+            this.elapsed++;
         }, 0, 1, TimeUnit.SECONDS);
     }
 
