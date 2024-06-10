@@ -28,8 +28,6 @@ public class SplitDamageSetting extends Challenge implements Listener {
     @Inject
     public SplitDamageSetting() {
         super("setting_splitdamage");
-
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override
@@ -61,6 +59,16 @@ public class SplitDamageSetting extends Challenge implements Listener {
                 Component.empty(),
                 this.activationComponent()
         );
+    }
+
+    @Override
+    public void onActivate() {
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+    }
+
+    @Override
+    public void onDeactivate() {
+        EntityDamageEvent.getHandlerList().unregister(this);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

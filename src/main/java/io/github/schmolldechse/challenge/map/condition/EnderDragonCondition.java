@@ -22,8 +22,6 @@ public class EnderDragonCondition extends Challenge implements Listener {
 
     public EnderDragonCondition() {
         super("condition_enderdragon");
-
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override
@@ -54,6 +52,16 @@ public class EnderDragonCondition extends Challenge implements Listener {
                 Component.empty(),
                 this.activationComponent()
         );
+    }
+
+    @Override
+    public void onActivate() {
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+    }
+
+    @Override
+    public void onDeactivate() {
+        EntityDeathEvent.getHandlerList().unregister(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

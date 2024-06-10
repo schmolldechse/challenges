@@ -23,8 +23,6 @@ public class HotbarSetting extends Challenge implements Listener {
 
     public HotbarSetting() {
         super("setting_hotbar");
-
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override
@@ -54,6 +52,16 @@ public class HotbarSetting extends Challenge implements Listener {
                 Component.empty(),
                 this.activationComponent()
         );
+    }
+
+    @Override
+    public void onActivate() {
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+    }
+
+    @Override
+    public void onDeactivate() {
+        PlayerInventorySlotChangeEvent.getHandlerList().unregister(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

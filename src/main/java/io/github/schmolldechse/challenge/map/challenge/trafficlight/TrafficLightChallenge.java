@@ -37,8 +37,6 @@ public class TrafficLightChallenge extends Challenge implements Listener {
     public TrafficLightChallenge() {
         super("challenge_trafficlight");
 
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
-
         this.settingsInventory = new TrafficLightInventory(this);
     }
 
@@ -83,6 +81,8 @@ public class TrafficLightChallenge extends Challenge implements Listener {
 
     @Override
     public void onActivate() {
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+
         this.bossBar = BossBar.bossBar(
                 Component.empty(),
                 0,
@@ -107,6 +107,9 @@ public class TrafficLightChallenge extends Challenge implements Listener {
 
     @Override
     public void onDeactivate() {
+        PlayerJoinEvent.getHandlerList().unregister(this);
+        PlayerMoveEvent.getHandlerList().unregister(this);
+
         this.timer.pause(); // shutdown trafficlight timer
 
         if (this.bossBar == null) return;

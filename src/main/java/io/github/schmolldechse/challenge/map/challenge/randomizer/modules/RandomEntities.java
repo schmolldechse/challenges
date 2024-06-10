@@ -37,8 +37,6 @@ public class RandomEntities extends Module<RandomizerChallenge> implements Liste
                 .filter(entityType -> entityType != EntityType.ENDER_DRAGON)
                 .filter(entityType -> entityType != EntityType.WITHER)
                 .toList();
-
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override
@@ -72,6 +70,16 @@ public class RandomEntities extends Module<RandomizerChallenge> implements Liste
                         ? Component.text("Aktiviert", NamedTextColor.GREEN)
                         : Component.text("Deaktiviert", NamedTextColor.RED)
         );
+    }
+
+    @Override
+    public void activate() {
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+    }
+
+    @Override
+    public void deactivate() {
+        CreatureSpawnEvent.getHandlerList().unregister(this);
     }
 
     @Override

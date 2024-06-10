@@ -35,8 +35,6 @@ public class RandomCrafting extends Module<RandomizerChallenge> implements Liste
                 .filter(material -> !this.challenge.excludedMaterials.contains(material))
                 .filter(material -> material != Material.AIR)
                 .toList();
-
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override
@@ -65,6 +63,16 @@ public class RandomCrafting extends Module<RandomizerChallenge> implements Liste
                         ? Component.text("Aktiviert", NamedTextColor.GREEN)
                         : Component.text("Deaktiviert", NamedTextColor.RED)
         );
+    }
+
+    @Override
+    public void activate() {
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+    }
+
+    @Override
+    public void deactivate() {
+        CraftItemEvent.getHandlerList().unregister(this);
     }
 
     @Override

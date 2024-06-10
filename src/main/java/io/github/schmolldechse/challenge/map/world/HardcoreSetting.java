@@ -23,8 +23,6 @@ public class HardcoreSetting extends Challenge implements Listener {
 
     public HardcoreSetting() {
         super("setting_hardcore");
-
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override
@@ -55,6 +53,16 @@ public class HardcoreSetting extends Challenge implements Listener {
                 Component.empty(),
                 this.activationComponent()
         );
+    }
+
+    @Override
+    public void onActivate() {
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+    }
+
+    @Override
+    public void onDeactivate() {
+        EntityRegainHealthEvent.getHandlerList().unregister(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

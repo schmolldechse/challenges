@@ -27,8 +27,6 @@ public class CraftingtableSetting extends Challenge implements Listener {
     @Inject
     public CraftingtableSetting() {
         super("setting_nocraftingtable");
-
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override
@@ -59,6 +57,16 @@ public class CraftingtableSetting extends Challenge implements Listener {
                 Component.empty(),
                 this.activationComponent()
         );
+    }
+
+    @Override
+    public void onActivate() {
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+    }
+
+    @Override
+    public void onDeactivate() {
+        CraftItemEvent.getHandlerList().unregister(this);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

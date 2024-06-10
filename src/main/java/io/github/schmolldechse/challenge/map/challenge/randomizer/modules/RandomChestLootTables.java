@@ -37,8 +37,6 @@ public class RandomChestLootTables extends Module<RandomizerChallenge> implement
                 .filter(lootTable -> lootTable.getKey().getKey().startsWith("chests/"))
                 .filter(lootTable -> !this.challenge.excludedLootTables.contains(lootTable))
                 .collect(Collectors.toList());
-
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override
@@ -67,6 +65,16 @@ public class RandomChestLootTables extends Module<RandomizerChallenge> implement
                         ? Component.text("Aktiviert", NamedTextColor.GREEN)
                         : Component.text("Deaktiviert", NamedTextColor.RED)
         );
+    }
+
+    @Override
+    public void activate() {
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+    }
+
+    @Override
+    public void deactivate() {
+        LootGenerateEvent.getHandlerList().unregister(this);
     }
 
     @Override

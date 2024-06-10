@@ -35,8 +35,6 @@ public class RandomBlockDrops extends Module<RandomizerChallenge> implements Lis
                 .filter(Material::isBlock)
                 .filter(material -> material != Material.AIR)
                 .toList();
-
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override
@@ -65,6 +63,16 @@ public class RandomBlockDrops extends Module<RandomizerChallenge> implements Lis
                         ? Component.text("Aktiviert", NamedTextColor.GREEN)
                         : Component.text("Deaktiviert", NamedTextColor.RED)
         );
+    }
+
+    @Override
+    public void activate() {
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+    }
+
+    @Override
+    public void deactivate() {
+        BlockBreakEvent.getHandlerList().unregister(this);
     }
 
     @Override

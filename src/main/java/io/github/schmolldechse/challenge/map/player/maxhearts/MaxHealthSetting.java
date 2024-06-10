@@ -23,7 +23,6 @@ import java.util.*;
 
 public class MaxHealthSetting extends Challenge implements Listener {
 
-    //TODO: fix display
     public double maxHealth = 20.0D;
 
     private final MaxHealthInventory settingsInventory;
@@ -31,8 +30,6 @@ public class MaxHealthSetting extends Challenge implements Listener {
     @Inject
     public MaxHealthSetting() {
         super("setting_maxhealth");
-
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
 
         this.settingsInventory = new MaxHealthInventory(this);
     }
@@ -72,11 +69,13 @@ public class MaxHealthSetting extends Challenge implements Listener {
 
     @Override
     public void onActivate() {
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
         this.updateHearts(this.maxHealth);
     }
 
     @Override
     public void onDeactivate() {
+        PlayerJoinEvent.getHandlerList().unregister(this);
         this.updateHearts(20.0D);
     }
 

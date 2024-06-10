@@ -45,8 +45,6 @@ public class RandomEntityDrops extends Module<RandomizerChallenge> implements Li
                 .map(LootTables::getLootTable)
                 .filter(lootTable -> lootTable.getKey().getKey().startsWith("entities/"))
                 .collect(Collectors.toList());
-
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override
@@ -75,6 +73,16 @@ public class RandomEntityDrops extends Module<RandomizerChallenge> implements Li
                         ? Component.text("Aktiviert", NamedTextColor.GREEN)
                         : Component.text("Deaktiviert", NamedTextColor.RED)
         );
+    }
+
+    @Override
+    public void activate() {
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+    }
+
+    @Override
+    public void deactivate() {
+        EntityDeathEvent.getHandlerList().unregister(this);
     }
 
     @Override

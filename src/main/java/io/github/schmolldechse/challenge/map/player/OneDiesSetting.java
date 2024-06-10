@@ -24,8 +24,6 @@ public class OneDiesSetting extends Challenge implements Listener {
     @Inject
     public OneDiesSetting() {
         super("setting_onedies");
-
-        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
     }
 
     @Override
@@ -56,6 +54,16 @@ public class OneDiesSetting extends Challenge implements Listener {
                 Component.empty(),
                 this.activationComponent()
         );
+    }
+
+    @Override
+    public void onActivate() {
+        this.plugin.getServer().getPluginManager().registerEvents(this, this.plugin);
+    }
+
+    @Override
+    public void onDeactivate() {
+        PlayerDeathEvent.getHandlerList().unregister(this);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
