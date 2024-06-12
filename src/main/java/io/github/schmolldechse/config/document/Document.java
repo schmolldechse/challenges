@@ -87,7 +87,12 @@ public class Document {
         return this;
     }
 
-    public JsonElement get(@NotNull String key) {
+    public JsonArray getArray(@NotNull String key) {
+        if (!this.jsonObject.has(key)) return null;
+        return this.jsonObject.get(key).getAsJsonArray();
+    }
+
+    public JsonElement getElement(@NotNull String key) {
         if (!this.jsonObject.has(key)) return null;
         return this.jsonObject.get(key);
     }
