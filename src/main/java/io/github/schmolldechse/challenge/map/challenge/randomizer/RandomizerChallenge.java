@@ -6,6 +6,7 @@ import io.github.schmolldechse.challenge.Challenge;
 import io.github.schmolldechse.challenge.Identification;
 import io.github.schmolldechse.challenge.map.challenge.randomizer.modules.*;
 import io.github.schmolldechse.challenge.module.Module;
+import io.github.schmolldechse.config.document.Document;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -15,9 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class RandomizerChallenge extends Challenge {
 
@@ -77,27 +76,26 @@ public class RandomizerChallenge extends Challenge {
     }
 
     @Override
-    public Map<String, Object> save() {
-        Map<String, Object> data = new HashMap<>();
+    public Document save() {
+        Document document = new Document();
 
         this.moduleRegistry.getModules().stream()
                 .filter(Module::isActive)
-                .forEach(module -> data.put(module.getIdentifierName(), module.save()));
+                .forEach(module -> document.append(module.getIdentifierName(), module.save()));
 
-        return data;
+        return document;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public void append(Map<String, Object> data) {
-        data.forEach((identifierName, value) -> {
+    public void append(Document document) {
+        document.keys().forEach(identifierName -> {
             Module<? extends Challenge> module = this.moduleRegistry.module(identifierName);
             if (module == null)
                 throw new IllegalArgumentException("Module with identifier " + identifierName + " does not exist");
 
             module.setActive(true);
             module.activate();
-            module.append((Map<String, Object>) value);
+            module.append(document.getDocument(identifierName));
         });
     }
 }

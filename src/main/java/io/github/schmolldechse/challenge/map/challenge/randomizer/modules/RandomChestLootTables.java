@@ -3,6 +3,7 @@ package io.github.schmolldechse.challenge.map.challenge.randomizer.modules;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.challenge.map.challenge.randomizer.RandomizerChallenge;
 import io.github.schmolldechse.challenge.module.Module;
+import io.github.schmolldechse.config.document.Document;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -99,29 +100,27 @@ public class RandomChestLootTables extends Module<RandomizerChallenge> implement
     }
 
     @Override
-    public Map<String, Object> save() {
-        Map<String, Object> data = new HashMap<>();
-
-        /**
-         * getKey() & getValue() each returns {@link org.bukkit.NamespacedKey}, and their getKey() returns a String
-         */
-        List<List<String>> blocksSerialized = this.lootTableRandomizerMap.entrySet().stream()
-                .map(entry -> Arrays.asList(entry.getKey().getKey().getKey(), entry.getValue().getKey().getKey()))
-                .toList();
-        data.put("map", blocksSerialized);
-
-        return data;
+    public Document save() {
+        // getKey() & getValue() each returns {@link org.bukkit.NamespacedKey}, and their getKey() returns a String
+        return new Document("map", this.lootTableRandomizerMap.entrySet().stream()
+                .map(entry -> new Document()
+                        .append("key", entry.getKey().getKey().getKey())
+                        .append("value", entry.getValue().getKey().getKey())
+                )
+                .toList());
     }
 
     @Override
-    public void append(Map<String, Object> data) {
-        if (data.containsKey("map")) {
-            List<List<String>> serialized = (List<List<String>>) data.get("map");
-            this.lootTableRandomizerMap = serialized.stream()
-                    .collect(Collectors.toMap(
-                            entry -> Bukkit.getLootTable(NamespacedKey.fromString(entry.get(0))),
-                            entry -> Bukkit.getLootTable(NamespacedKey.fromString(entry.get(1)))
-                    ));
+    public void append(Document document) {
+        if (document.contains("map")) {
+            Document map = document.getDocument("map");
+            map.keys().forEach(key -> {
+                Document entry = map.getDocument(key);
+                this.lootTableRandomizerMap.put(
+                        Bukkit.getLootTable(NamespacedKey.fromString(entry.getString("key"))),
+                        Bukkit.getLootTable(NamespacedKey.fromString(entry.getString("value")))
+                );
+            });
         }
     }
 

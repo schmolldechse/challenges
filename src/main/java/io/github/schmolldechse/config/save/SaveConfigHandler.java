@@ -1,19 +1,15 @@
 package io.github.schmolldechse.config.save;
 
-import com.google.common.reflect.TypeToken;
+import com.google.gson.JsonArray;
 import com.google.inject.Inject;
 import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.challenge.Challenge;
+import io.github.schmolldechse.config.document.Document;
 import io.github.schmolldechse.team.Team;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.UUID;
 
 public class SaveConfigHandler {
 
@@ -29,87 +25,65 @@ public class SaveConfigHandler {
 
     public void readAppend() {
         if (!this.path.exists()) return;
+        Document document = Document.load(this.path.toPath());
 
-        try {
-            byte[] bytes = Files.readAllBytes(Paths.get(this.path.toURI()));
-            String json = new String(bytes, StandardCharsets.UTF_8);
+        if (document.contains("timer")) {
+            Document timer = document.getDocument("timer");
+            this.plugin.timerHandler.time = timer.getInt("time");
+            this.plugin.timerHandler.reverse = timer.getBoolean("reverse");
+        }
 
-            Type type = new TypeToken<Map<String, Object>>(){}.getType();
-            Map<String, Object> data = this.plugin.GSON.fromJson(json, type);
+        if (document.contains("teams")) {
+            JsonArray teams = document.getArray("teams");
 
-            // team json object
-            Type teamType = new TypeToken<List<Map<String, Object>>>(){}.getType();
-            List<Map<String, Object>> teamData = this.plugin.GSON.fromJson(this.plugin.GSON.toJson(data.get("teams")), teamType);
-            teamData.forEach(teamObject -> {
-                String name = (String) teamObject.get("name");
-                if (this.plugin.teamHandler.team(name) != null) return;
-                Team team = new Team(name);
+            teams.forEach(element -> {
+                Document teamDocument = new Document(element.getAsJsonObject());
 
-                // update members
-                Type uuidsType = new TypeToken<List<String>>(){}.getType();
-                List<String> uuids = this.plugin.GSON.fromJson(this.plugin.GSON.toJson(teamObject.get("uuids")), uuidsType);
-                uuids.forEach(uuid -> team.addMember(UUID.fromString(uuid)));
-
-                // update data
-                Type dataType = new TypeToken<Map<String, Object>>(){}.getType();
-                Map<String, Object> dataMap = this.plugin.GSON.fromJson(this.plugin.GSON.toJson(teamObject.get("data")), dataType);
-                team.getData().putAll(dataMap);
+                Team team = new Team(teamDocument.getString("name"));
+                team.setDocument(teamDocument.getDocument("document"));
+                teamDocument.getArray("uuids").forEach(uuidElement -> team.addMember(UUID.fromString(uuidElement.getAsString())));
 
                 this.plugin.teamHandler.register(team);
             });
+        }
 
-            // challenge json object
-            Type challengeType = new TypeToken<Map<String, Map<String, Object>>>(){}.getType();
-            Map<String, Map<String, Object>> challengeData = this.plugin.GSON.fromJson(this.plugin.GSON.toJson(data.get("challenges")), challengeType);
-            challengeData.forEach((key, value) -> {
-                Challenge challenge = this.plugin.challengeHandler.getChallenge(key);
+        if (document.contains("challenges")) {
+            JsonArray challenges = document.getArray("challenges");
+
+            challenges.forEach(element -> {
+                Document challengeDocument = new Document(element.getAsJsonObject());
+                String identifierName = challengeDocument.keys().iterator().next();
+
+                Challenge challenge = this.plugin.challengeHandler.getChallenge(identifierName);
                 if (challenge == null) return;
 
                 challenge.setActive(true);
                 challenge.onActivate();
-                challenge.append(value);
+                challenge.append(challengeDocument.getDocument(identifierName));
             });
-
-            // timer json object
-            Type timerType = new TypeToken<Map<String, Object>>(){}.getType();
-            Map<String, Object> timerData = this.plugin.GSON.fromJson(this.plugin.GSON.toJson(data.get("timer")), timerType);
-            this.plugin.timerHandler.time = ((Number) timerData.get("time")).intValue();
-            this.plugin.timerHandler.reverse = (boolean) timerData.get("reverse");
-
-            if (!this.path.delete()) throw new IOException("Failed to delete save file");
-        } catch (IOException exception) {
-            throw new RuntimeException("Failed to read data", exception);
         }
+
+        this.path.delete();
     }
 
     public void save() {
-        Map<String, Object> data = new HashMap<>();
+        Document document = new Document();
 
-        // Saving challenge data
-        Map<String, Map<String, Object>> challengeData = new HashMap<>();
-        this.plugin.challengeHandler.registeredChallenges.entrySet().stream()
+        document.append("timer", new Document()
+                .append("time", this.plugin.timerHandler.time)
+                .append("reverse", this.plugin.timerHandler.reverse)
+        );
+
+        document.append("teams", this.plugin.teamHandler.getRegisteredTeams().stream()
+                .map(Team::save)
+                .toList()
+        );
+
+        document.append("challenges", this.plugin.challengeHandler.registeredChallenges.entrySet().stream()
                 .filter(entry -> entry.getValue().isActive())
-                .forEach(entry -> challengeData.put(entry.getKey(), entry.getValue().save()));
-        data.put("challenges", challengeData);
+                .map(entry -> new Document().append(entry.getKey(), entry.getValue().save()))
+                .toList());
 
-        // Saving timer data
-        data.put("timer", Map.of(
-                "time", this.plugin.timerHandler.time,
-                "reverse", this.plugin.timerHandler.reverse
-        ));
-
-        // Saving team data
-        List<Map<String, Object>> teamData = new ArrayList<>();
-        this.plugin.teamHandler.getRegisteredTeams()
-                .forEach(entry -> teamData.add(entry.save()));
-        data.put("teams", teamData);
-
-        String json = this.plugin.GSON.toJson(data);
-
-        try {
-            Files.writeString(Paths.get(this.path.toURI()), json);
-        } catch (IOException exception) {
-            throw new RuntimeException("Failed to save data", exception);
-        }
+        document.save(this.path.toPath());
     }
 }

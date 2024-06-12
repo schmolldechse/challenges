@@ -2,13 +2,13 @@ package io.github.schmolldechse.challenge.module;
 
 import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.challenge.Challenge;
+import io.github.schmolldechse.config.document.Document;
 import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
-import java.util.Map;
 
 public abstract class Module<T extends Challenge> {
 
@@ -48,15 +48,15 @@ public abstract class Module<T extends Challenge> {
 
     /**
      * Saves module data which can be applied after a restart
-     * @return map of saved data
+     * @return Document of saved data
      */
-    public Map<String, Object> save() { return Map.of(); }
+    public Document save() { return new Document(); }
 
     /**
      * Appends saved data to the module
-     * @param data data to append
+     * @param document {@link Document} containing the saved data
      */
-    public void append(Map<String, Object> data) { }
+    public void append(Document document) { }
 
     public void toggle() {
         if (this.plugin.challengeHandler == null) throw new IllegalStateException("ChallengeHandler is not initialized");

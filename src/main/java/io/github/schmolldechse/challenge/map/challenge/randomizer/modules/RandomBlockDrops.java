@@ -3,6 +3,7 @@ package io.github.schmolldechse.challenge.map.challenge.randomizer.modules;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.challenge.map.challenge.randomizer.RandomizerChallenge;
 import io.github.schmolldechse.challenge.module.Module;
+import io.github.schmolldechse.config.document.Document;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -97,26 +98,26 @@ public class RandomBlockDrops extends Module<RandomizerChallenge> implements Lis
     }
 
     @Override
-    public Map<String, Object> save() {
-        Map<String, Object> data = new HashMap<>();
-
-        List<List<String>> blocksSerialized = this.blocksRandomizerMap.entrySet().stream()
-                .map(entry -> Arrays.asList(entry.getKey().name(), entry.getValue().name()))
-                .toList();
-        data.put("map", blocksSerialized);
-
-        return data;
+    public Document save() {
+        return new Document("map", this.blocksRandomizerMap.entrySet().stream()
+                .map(entry -> new Document()
+                        .append("key", entry.getKey().name())
+                        .append("value", entry.getValue().name())
+                )
+                .toList());
     }
 
     @Override
-    public void append(Map<String, Object> data) {
-        if (data.containsKey("map")) {
-            List<List<String>> blocksSerialized = (List<List<String>>) data.get("map");
-            this.blocksRandomizerMap = blocksSerialized.stream()
-                    .collect(Collectors.toMap(
-                            entry -> Material.valueOf(entry.get(0)),
-                            entry -> Material.valueOf(entry.get(1))
-                    ));
+    public void append(Document document) {
+        if (document.contains("map")) {
+            Document map = document.getDocument("map");
+            map.keys().forEach(key -> {
+                Document entry = map.getDocument(key);
+                this.blocksRandomizerMap.put(
+                        Material.valueOf(entry.getString("key")),
+                        Material.valueOf(entry.getString("value"))
+                );
+            });
         }
     }
 

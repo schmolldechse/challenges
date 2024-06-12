@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.challenge.Challenge;
 import io.github.schmolldechse.challenge.Identification;
+import io.github.schmolldechse.config.document.Document;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -19,7 +20,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class MaxHealthSetting extends Challenge implements Listener {
 
@@ -80,16 +83,16 @@ public class MaxHealthSetting extends Challenge implements Listener {
     }
 
     @Override
-    public Map<String, Object> save() {
-        Map<String, Object> data = new HashMap<>();
-        data.put("maxHealth", this.maxHealth);
-        return data;
+    public Document save() {
+        return new Document("maxHealth", this.maxHealth);
     }
 
     @Override
-    public void append(Map<String, Object> data) {
-        this.maxHealth = (double) data.get("maxHealth");
-        this.updateHearts(this.maxHealth);
+    public void append(Document document) {
+        if (document.contains("maxHealth")) {
+            this.maxHealth = document.getDouble("maxHealth");
+            this.updateHearts(this.maxHealth);
+        }
     }
 
     @Override

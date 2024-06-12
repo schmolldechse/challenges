@@ -3,6 +3,7 @@ package io.github.schmolldechse.challenge;
 import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.challenge.module.Module;
 import io.github.schmolldechse.challenge.module.ModuleRegistry;
+import io.github.schmolldechse.config.document.Document;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -21,7 +22,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 
 public abstract class Challenge implements Listener {
 
@@ -122,15 +122,15 @@ public abstract class Challenge implements Listener {
 
     /**
      * Saves challenge data which can be applied after a restart
-     * @return map of saved data
+     * @return Document of saved data
      */
-    public Map<String, Object> save() { return Map.of(); }
+    public Document save() { return new Document(); }
 
     /**
      * Appends saved data to the challenge
-     * @param data data to append
+     * @param document {@link Document} containing the saved data
      */
-    public void append(Map<String, Object> data) { }
+    public void append(Document document) { }
 
     /**
      * Opens the inventory for the player to change the settings of a challenge

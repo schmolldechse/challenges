@@ -4,11 +4,15 @@ import com.google.inject.Inject;
 import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.challenge.Challenge;
 import io.github.schmolldechse.challenge.Identification;
+import io.github.schmolldechse.config.document.Document;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,9 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TrafficLightChallenge extends Challenge implements Listener {
 
@@ -130,19 +132,15 @@ public class TrafficLightChallenge extends Challenge implements Listener {
     }
 
     @Override
-    public Map<String, Object> save() {
-        Map<String, Object> data = new HashMap<>();
-
-        data.put("status", this.status);
-        data.put("remainingTime", this.timer.remainingTime);
-
-        return data;
+    public Document save() {
+        return new Document("status", this.status)
+                .append("remainingTime", this.timer.remainingTime);
     }
 
     @Override
-    public void append(Map<String, Object> data) {
-        this.status = TrafficLightStatus.valueOf((String) data.get("status"));
-        this.timer.remainingTime = ((Number) data.get("remainingTime")).longValue();
+    public void append(Document document) {
+        if (document.contains("status")) this.status = TrafficLightStatus.valueOf(document.getString("status"));
+        if (document.contains("remainingTime")) this.timer.remainingTime = document.getLong("remainingTime");
     }
 
     @EventHandler

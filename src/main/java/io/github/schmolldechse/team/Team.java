@@ -1,18 +1,22 @@
 package io.github.schmolldechse.team;
 
-import java.util.*;
+import io.github.schmolldechse.config.document.Document;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class Team {
 
     private String name;
     private final List<UUID> uuids;
-    private Map<String, Object> data;
+    private Document document;
 
     public Team(String name) {
         this.name = name;
 
         this.uuids = new ArrayList<>();
-        this.data = new HashMap<>();
+        this.document = new Document();
     }
 
     public String getName() {
@@ -39,17 +43,17 @@ public class Team {
         this.uuids.remove(uuid);
     }
 
-    public Map<String, Object> save() {
-        Map<String, Object> data = new HashMap<>();
-
-        data.put("name", this.name);
-        data.put("uuids", this.uuids);
-        data.put("data", this.data);
-
-        return data;
+    public Document save() {
+        return new Document("name", this.name)
+                .append("uuids", this.uuids)
+                .append("document", this.document);
     }
 
-    public Map<String, Object> getData() {
-        return data;
+    public void setDocument(Document document) {
+        this.document = document;
+    }
+
+    public Document getDocument() {
+        return document;
     }
 }
