@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class Document {
 
     private final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(Document.class, new DocumentTypeAdapter())
             .serializeNulls()
             .setPrettyPrinting()
             .create();
@@ -145,6 +146,10 @@ public class Document {
     public Document clear() {
         this.keys().forEach(this::remove);
         return this;
+    }
+
+    public String toJson() {
+        return this.GSON.toJson(this.jsonObject);
     }
 
     public static Document load(@NotNull Path path) {
