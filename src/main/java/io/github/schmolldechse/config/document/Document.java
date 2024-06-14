@@ -81,6 +81,12 @@ public class Document {
         return this;
     }
 
+    public Document append(@NotNull String key, @Nullable Map<?, ?>  value) {
+        if (value == null) return this;
+        this.jsonObject.add(key, this.GSON.toJsonTree(value));
+        return this;
+    }
+
     public Document append(@NotNull String key, @Nullable Document value) {
         if (value == null) return this;
         this.jsonObject.add(key, value.jsonObject);
