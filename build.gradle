@@ -1,8 +1,8 @@
 plugins {
     id 'java'
 
-    // showJar
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    // shadow
+    id 'io.github.goooler.shadow' version '8.1.7'
 }
 
 group = 'io.github.schmolldechse'
