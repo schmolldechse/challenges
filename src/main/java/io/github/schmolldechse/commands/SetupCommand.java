@@ -28,7 +28,7 @@ public class SetupCommand {
                 .executes((source) -> {
                     Entity entity = source.getSource().getExecutor();
                     if (!(entity instanceof Player player)) {
-                        source.getSource().getExecutor().sendMessage(Component.text("You can not execute this command", NamedTextColor.RED));
+                        source.getSource().getSender().sendMessage(Component.text("You can not execute this command", NamedTextColor.RED));
                         return 0;
                     }
 
