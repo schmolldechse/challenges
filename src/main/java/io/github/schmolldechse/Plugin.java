@@ -66,7 +66,7 @@ public final class Plugin extends JavaPlugin {
         this.createConfig();
         this.readConfig();
 
-        this.purgeWorlds(true);
+        this.purgeWorlds();
     }
 
     @Override
@@ -105,8 +105,6 @@ public final class Plugin extends JavaPlugin {
 
         if (this.timerHandler != null) this.timerHandler.shutdown();
         if (this.challengeHandler != null) this.challengeHandler.deactivate();
-
-        this.purgeWorlds(false);
     }
 
     private void readConfig() {
@@ -162,7 +160,7 @@ public final class Plugin extends JavaPlugin {
         }
     }
 
-    private void purgeWorlds(boolean deleteCache) {
+    private void purgeWorlds() {
         File resetCacheFile = new File(this.getDataFolder(), "reset.cache");
         if (!resetCacheFile.exists()) return;
 
@@ -190,20 +188,18 @@ public final class Plugin extends JavaPlugin {
                     }
                 });
 
-        if (deleteCache) {
-            resetCacheFile.delete();
+        resetCacheFile.delete();
 
-            this.getLogger().info("Deleted reset.cache file");
-            this.getLogger().info("RESTARTING SERVER - STARTING NEW WORLD GENERATION ON NEXT STARTUP");
+        this.getLogger().info("Deleted reset.cache file");
+        this.getLogger().info("RESTARTING SERVER - STARTING NEW WORLD GENERATION ON NEXT STARTUP");
 
-            switch (this.RESET_TYPE) {
-                case "STOP":
-                    Bukkit.shutdown();
-                    break;
-                case "RESTART":
-                    Bukkit.spigot().restart();
-                    break;
-            }
+        switch (this.RESET_TYPE) {
+            case "STOP":
+                Bukkit.shutdown();
+                break;
+            case "RESTART":
+                Bukkit.spigot().restart();
+                break;
         }
     }
 }
