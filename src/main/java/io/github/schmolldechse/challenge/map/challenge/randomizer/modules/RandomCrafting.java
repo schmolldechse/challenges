@@ -34,7 +34,6 @@ public class RandomCrafting extends Module<RandomizerChallenge> implements Liste
         this.filteredItemList = Stream.of(Material.values())
                 .filter(Material::isItem)
                 .filter(material -> !this.challenge.excludedMaterials.contains(material))
-                .filter(material -> material != Material.AIR)
                 .toList();
     }
 

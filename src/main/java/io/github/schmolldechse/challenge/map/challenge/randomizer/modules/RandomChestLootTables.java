@@ -36,7 +36,6 @@ public class RandomChestLootTables extends Module<RandomizerChallenge> implement
 
         this.filteredLootTables = Stream.of(LootTables.values())
                 .filter(lootTable -> lootTable.getKey().getKey().startsWith("chests/"))
-                .filter(lootTable -> !this.challenge.excludedLootTables.contains(lootTable))
                 .collect(Collectors.toList());
     }
 

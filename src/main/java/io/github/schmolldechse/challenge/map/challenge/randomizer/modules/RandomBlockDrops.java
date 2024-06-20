@@ -34,7 +34,6 @@ public class RandomBlockDrops extends Module<RandomizerChallenge> implements Lis
                 .filter(Material::isItem)
                 .filter(material -> !this.challenge.excludedMaterials.contains(material))
                 .filter(Material::isBlock)
-                .filter(material -> material != Material.AIR)
                 .toList();
     }
 

@@ -17,7 +17,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.loot.LootTables;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.Duration;
@@ -33,49 +32,24 @@ public abstract class Challenge implements Listener {
     private final String identifierName;
     protected boolean active = false;
 
-    //TODO: remove list in 1.21 again
+    //TODO: remove Bundle after its ApiExperimental annotation is removed again
     public final List<Material> excludedMaterials = List.of(
-            Material.TUFF_SLAB, Material.TUFF_STAIRS, Material.TUFF_WALL, Material.CHISELED_TUFF,
-            Material.POLISHED_TUFF, Material.POLISHED_TUFF_SLAB, Material.POLISHED_TUFF_STAIRS,
-            Material.POLISHED_TUFF_WALL, Material.TUFF_BRICKS, Material.TUFF_BRICK_SLAB,
-            Material.TUFF_BRICK_STAIRS, Material.TUFF_BRICK_WALL, Material.CHISELED_TUFF_BRICKS,
-            Material.CHISELED_COPPER, Material.EXPOSED_CHISELED_COPPER, Material.WEATHERED_CHISELED_COPPER,
-            Material.OXIDIZED_CHISELED_COPPER, Material.WAXED_CHISELED_COPPER, Material.WAXED_EXPOSED_CHISELED_COPPER,
-            Material.WAXED_WEATHERED_CHISELED_COPPER, Material.WAXED_OXIDIZED_CHISELED_COPPER, Material.COPPER_DOOR,
-            Material.EXPOSED_COPPER_DOOR, Material.WEATHERED_COPPER_DOOR, Material.OXIDIZED_COPPER_DOOR,
-            Material.WAXED_COPPER_DOOR, Material.WAXED_EXPOSED_COPPER_DOOR, Material.WAXED_WEATHERED_COPPER_DOOR,
-            Material.WAXED_OXIDIZED_COPPER_DOOR, Material.COPPER_TRAPDOOR, Material.EXPOSED_COPPER_TRAPDOOR,
-            Material.WEATHERED_COPPER_TRAPDOOR, Material.OXIDIZED_COPPER_TRAPDOOR, Material.WAXED_COPPER_TRAPDOOR,
-            Material.WAXED_EXPOSED_COPPER_TRAPDOOR, Material.WAXED_WEATHERED_COPPER_TRAPDOOR, Material.WAXED_OXIDIZED_COPPER_TRAPDOOR,
-            Material.BUNDLE, Material.CRAFTER, Material.BREEZE_SPAWN_EGG, Material.COPPER_GRATE,
-            Material.EXPOSED_COPPER_GRATE, Material.WEATHERED_COPPER_GRATE, Material.OXIDIZED_COPPER_GRATE,
-            Material.WAXED_COPPER_GRATE, Material.WAXED_EXPOSED_COPPER_GRATE, Material.WAXED_WEATHERED_COPPER_GRATE,
-            Material.WAXED_OXIDIZED_COPPER_GRATE, Material.COPPER_BULB, Material.EXPOSED_COPPER_BULB,
-            Material.WEATHERED_COPPER_BULB, Material.OXIDIZED_COPPER_BULB, Material.WAXED_COPPER_BULB,
-            Material.WAXED_EXPOSED_COPPER_BULB, Material.WAXED_WEATHERED_COPPER_BULB, Material.WAXED_OXIDIZED_COPPER_BULB,
-            Material.TRIAL_SPAWNER, Material.TRIAL_KEY, Material.AIR
+            Material.BUNDLE, Material.AIR
     );
 
-    // TODO: remove BREEZE in 1.21
     public final List<EntityType> excludedEntities = List.of(
-            EntityType.DROPPED_ITEM, EntityType.EXPERIENCE_ORB, EntityType.AREA_EFFECT_CLOUD, EntityType.EGG,
-            EntityType.LEASH_HITCH, EntityType.PAINTING, EntityType.ARROW, EntityType.SNOWBALL, EntityType.FIREBALL,
-            EntityType.SMALL_FIREBALL, EntityType.ENDER_PEARL, EntityType.ENDER_SIGNAL, EntityType.SPLASH_POTION,
-            EntityType.THROWN_EXP_BOTTLE, EntityType.ITEM_FRAME, EntityType.WITHER_SKULL, EntityType.PRIMED_TNT,
-            EntityType.FALLING_BLOCK, EntityType.FIREWORK, EntityType.SPECTRAL_ARROW, EntityType.DRAGON_FIREBALL,
-            EntityType.EVOKER_FANGS, EntityType.LLAMA_SPIT, EntityType.GLOW_ITEM_FRAME, EntityType.MARKER,
-            EntityType.BLOCK_DISPLAY, EntityType.INTERACTION, EntityType.ITEM_DISPLAY, EntityType.TEXT_DISPLAY,
-            EntityType.BREEZE, EntityType.WIND_CHARGE, EntityType.FISHING_HOOK, EntityType.LIGHTNING,
-            EntityType.PLAYER, EntityType.UNKNOWN, EntityType.MINECART, EntityType.MINECART_CHEST,
-            EntityType.MINECART_FURNACE, EntityType.MINECART_TNT, EntityType.MINECART_HOPPER, EntityType.MINECART_MOB_SPAWNER
-    );
-
-    //TODO: remove list in 1.21 again
-    public final List<LootTables> excludedLootTables = List.of(
-            LootTables.TRIAL_CHAMBERS_REWARD, LootTables.TRIAL_CHAMBERS_SUPPLY, LootTables.TRIAL_CHAMBERS_CORRIDOR,
-            LootTables.TRIAL_CHAMBERS_INTERSECTION, LootTables.TRIAL_CHAMBERS_INTERSECTION_BARREL, LootTables.TRIAL_CHAMBERS_ENTRANCE,
-            LootTables.TRIAL_CHAMBERS_CORRIDOR_DISPENSER, LootTables.TRIAL_CHAMBERS_CHAMBER_DISPENSER, LootTables.TRIAL_CHAMBERS_WATER_DISPENSER,
-            LootTables.TRIAL_CHAMBERS_CORRIDOR_POT
+            EntityType.ITEM, EntityType.EXPERIENCE_ORB, EntityType.AREA_EFFECT_CLOUD, EntityType.EGG,
+            EntityType.LEASH_KNOT, EntityType.PAINTING, EntityType.ARROW, EntityType.SNOWBALL, EntityType.FIREBALL,
+            EntityType.SMALL_FIREBALL, EntityType.ENDER_PEARL, EntityType.EYE_OF_ENDER, EntityType.POTION,
+            EntityType.EXPERIENCE_BOTTLE, EntityType.ITEM_FRAME, EntityType.WITHER_SKULL, EntityType.TNT,
+            EntityType.FALLING_BLOCK, EntityType.FIREWORK_ROCKET, EntityType.SPECTRAL_ARROW, EntityType.SHULKER_BULLET,
+            EntityType.DRAGON_FIREBALL, EntityType.ARMOR_STAND, EntityType.EVOKER_FANGS, EntityType.COMMAND_BLOCK_MINECART,
+            EntityType.BOAT, EntityType.MINECART, EntityType.CHEST_MINECART, EntityType.FURNACE_MINECART,
+            EntityType.TNT_MINECART, EntityType.HOPPER_MINECART, EntityType. SPAWNER_MINECART, EntityType.LLAMA_SPIT,
+            EntityType.END_CRYSTAL, EntityType.TRIDENT, EntityType.GLOW_ITEM_FRAME, EntityType.MARKER,
+            EntityType.CHEST_BOAT, EntityType.BLOCK_DISPLAY, EntityType.INTERACTION, EntityType.ITEM_DISPLAY, EntityType.TEXT_DISPLAY,
+            EntityType.WIND_CHARGE, EntityType.BREEZE_WIND_CHARGE, EntityType.OMINOUS_ITEM_SPAWNER,
+            EntityType.FISHING_BOBBER, EntityType.LIGHTNING_BOLT, EntityType.PLAYER, EntityType.UNKNOWN
     );
 
     /**
