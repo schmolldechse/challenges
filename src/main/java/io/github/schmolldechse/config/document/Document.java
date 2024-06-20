@@ -154,6 +154,10 @@ public class Document {
                 .collect(Collectors.toSet());
     }
 
+    public int size() {
+        return this.jsonObject.size();
+    }
+
     public Document clear() {
         this.keys().forEach(this::remove);
         return this;
