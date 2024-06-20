@@ -9,9 +9,9 @@ import io.github.schmolldechse.timer.TimerHandler;
 public class PluginModule extends AbstractModule {
     @Override
     protected void configure() {
+        bind(TeamHandler.class).asEagerSingleton();
         bind(TimerHandler.class).asEagerSingleton();
         bind(ChallengeHandler.class).asEagerSingleton();
         bind(SaveConfigHandler.class).asEagerSingleton();
-        bind(TeamHandler.class).asEagerSingleton();
     }
 }
