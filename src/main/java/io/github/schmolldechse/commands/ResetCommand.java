@@ -1,8 +1,9 @@
 package io.github.schmolldechse.commands;
 
-import dev.jorel.commandapi.CommandTree;
-import dev.jorel.commandapi.arguments.LiteralArgument;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.schmolldechse.Plugin;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -30,23 +31,28 @@ public class ResetCommand {
 
     private final Plugin plugin;
 
-    public ResetCommand() {
+    public ResetCommand(Commands commands) {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
+        this.register(commands);
     }
 
-    public void registerCommand() {
-        new CommandTree("reset")
-                .then(new LiteralArgument("-copy", "-c")
-                        .executes((sender, args) -> {
-                            this.prepare();
-                            this.executeRestart();
-                        }))
-                .executes((sender, args) -> {
+    private void register(Commands commands) {
+        final LiteralArgumentBuilder<CommandSourceStack> resetBuilder = Commands.literal("reset")
+                .executes((source) -> {
                     this.prepare();
                     this.plugin.DELETE_EXECUTED = true;
                     this.executeRestart();
+                    return 1;
                 })
-                .register();
+                .then(
+                        Commands.literal("-copy")
+                                .executes((source) -> {
+                                    this.prepare();
+                                    this.executeRestart();
+                                    return 1;
+                                })
+                );
+        commands.register(this.plugin.getPluginMeta(), resetBuilder.build(), "Reset the worlds & if specified, delete the current settings of challenges", List.of());
     }
 
     private void prepare() {

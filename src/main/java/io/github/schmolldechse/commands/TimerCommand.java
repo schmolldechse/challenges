@@ -1,14 +1,16 @@
 package io.github.schmolldechse.commands;
 
-import dev.jorel.commandapi.CommandTree;
-import dev.jorel.commandapi.arguments.GreedyStringArgument;
-import dev.jorel.commandapi.arguments.LiteralArgument;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.schmolldechse.Plugin;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.Duration;
+import java.util.List;
 
 public class TimerCommand {
 
@@ -18,40 +20,52 @@ public class TimerCommand {
 
     private final Plugin plugin;
 
-    public TimerCommand() {
+    public TimerCommand(Commands commmands) {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
+        this.register(commmands);
     }
 
-    public void registerCommand() {
-        new CommandTree("timer")
-                .then(new LiteralArgument("pause")
-                        .executes((sender, args) -> {
-                            if (this.plugin.timerHandler.isPaused()) {
-                                sender.sendMessage(Component.text("(!) Timer already paused", NamedTextColor.RED));
-                                return;
-                            }
-                            this.plugin.timerHandler.pause();
-                            this.plugin.MOVEMENT_ALLOWED = false;
-                        }))
-                .then(new LiteralArgument("resume")
-                        .executes((sender, args) -> {
-                            if (!this.plugin.timerHandler.isPaused()) {
-                                sender.sendMessage(Component.text("(!) Timer already running", NamedTextColor.RED));
-                                return;
-                            }
+    private void register(Commands commands) {
+        final LiteralArgumentBuilder<CommandSourceStack> timerBuilder = Commands.literal("timer")
+                .then(
+                        Commands.literal("pause")
+                                .executes((source) -> {
+                                    if (this.plugin.timerHandler.isPaused()) {
+                                        source.getSource().getExecutor().sendMessage(Component.text("(!) Timer already paused", NamedTextColor.RED));
+                                        return 0;
+                                    }
+                                    this.plugin.timerHandler.pause();
+                                    this.plugin.MOVEMENT_ALLOWED = false;
+                                    return 1;
+                                })
+                )
+                .then(
+                        Commands.literal("resume")
+                                .executes((source) -> {
+                                    if (!this.plugin.timerHandler.isPaused()) {
+                                        source.getSource().getExecutor().sendMessage(Component.text("(!) Timer already running", NamedTextColor.RED));
+                                        return 0;
+                                    }
+                                    this.plugin.timerHandler.start();
+                                    this.plugin.MOVEMENT_ALLOWED = true;
+                                    return 1;
+                                })
+                )
+                .then(
+                        Commands.literal("time")
+                                .then(
+                                        Commands.argument("time", StringArgumentType.greedyString())
+                                                .executes((source) -> {
+                                                            String time = StringArgumentType.getString(source, "time");
+                                                            if (time == null) return 0;
 
-                            this.plugin.timerHandler.start();
-                            this.plugin.MOVEMENT_ALLOWED = true;
-                        }))
-                .then(new LiteralArgument("time")
-                        .then(new GreedyStringArgument("time")
-                                .executesPlayer((sender, args) -> {
-                                    String time = (String) args.get("time");
-                                    if (time == null) return;
-
-                                    this.plugin.timerHandler.update((int) convert(time));
-                                })))
-                .register();
+                                                            this.plugin.timerHandler.update((int) convert(time));
+                                                            return 1;
+                                                        }
+                                                )
+                                )
+                );
+        commands.register(this.plugin.getPluginMeta(), timerBuilder.build(), "Modifies the timer", List.of());
     }
 
     private long convert(String time) {

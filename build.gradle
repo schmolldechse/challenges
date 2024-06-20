@@ -19,10 +19,6 @@ repositories {
         url = "https://oss.sonatype.org/content/groups/public/"
     }
 
-    maven {
-        url = "https://repo.codemc.org/repository/maven-public/"
-    }
-
     // GuiBuilder
     maven {
         url = "https://repo.mattstudios.me/artfiactory/public/"
@@ -36,10 +32,6 @@ dependencies {
     // Inject
     implementation "com.google.inject:guice:5.0.1"
     implementation "aopalliance:aopalliance:1.0"
-
-    // CommandAPI
-    compileOnly "dev.jorel:commandapi-bukkit-core:9.4.0"
-    implementation "dev.jorel:commandapi-bukkit-shade:9.4.0"
 
     // Reflections  https://mvnrepository.com/artifact/org.reflections/reflections
     implementation group: 'org.reflections', name: 'reflections', version: '0.9.12'
@@ -60,7 +52,6 @@ shadowJar {
     configurations = [project.configurations.runtimeClasspath]
 
     dependencies {
-        include dependency("dev.jorel:commandapi-bukkit-shade:9.4.0")
         include dependency("com.google.inject:guice:5.0.1")
         include dependency("aopalliance:aopalliance:1.0")
         include dependency("org.reflections:reflections:0.9.12")
@@ -69,7 +60,6 @@ shadowJar {
         include dependency('org.json:json:20240303')
     }
 
-    relocate("dev.jorel.commandapi", "io.github.schmolldechse.commandapi")
     relocate("org.reflections", "io.github.schmolldechse.reflections")
     relocate("dev.triumphteam.gui", "io.github.schmolldechse.gui")
 }

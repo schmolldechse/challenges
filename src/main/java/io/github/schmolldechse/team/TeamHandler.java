@@ -17,8 +17,6 @@ public class TeamHandler {
     @Inject
     public TeamHandler() {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
-
-        new TeamCommand().registerCommand();
     }
 
     public void register(Team team) {

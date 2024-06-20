@@ -5,8 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import io.github.schmolldechse.challenge.ChallengeHandler;
 import io.github.schmolldechse.commands.ResetCommand;
 import io.github.schmolldechse.commands.SetupCommand;
@@ -16,8 +14,12 @@ import io.github.schmolldechse.inventory.*;
 import io.github.schmolldechse.listener.PlayerJoinListener;
 import io.github.schmolldechse.listener.PlayerMoveListener;
 import io.github.schmolldechse.listener.PlayerResourcePackStatusListener;
+import io.github.schmolldechse.team.TeamCommand;
 import io.github.schmolldechse.team.TeamHandler;
 import io.github.schmolldechse.timer.TimerHandler;
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -59,9 +61,6 @@ public final class Plugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        // TODO: CommandAPI -> Cloud v2
-        CommandAPI.onLoad(new CommandAPIBukkitConfig(this).silentLogs(true));
-
         if (!this.getDataFolder().exists()) this.getDataFolder().mkdir();
 
         this.createConfig();
@@ -72,14 +71,18 @@ public final class Plugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        CommandAPI.onEnable();
-
         Injector injector = Guice.createInjector(new PluginModule());
         injector.injectMembers(this);
 
-        new TimerCommand().registerCommand();
-        new SetupCommand().registerCommand();
-        new ResetCommand().registerCommand();
+        final LifecycleEventManager<org.bukkit.plugin.Plugin> lifecycleManager = this.getLifecycleManager();
+        lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+            final Commands commands = event.registrar();
+
+            new ResetCommand(commands);
+            new SetupCommand(commands);
+            new TimerCommand(commands);
+            new TeamCommand(commands);
+        });
 
         new PlayerMoveListener();
         new PlayerJoinListener();
@@ -98,8 +101,6 @@ public final class Plugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        CommandAPI.onDisable();
-
         if (!this.DELETE_EXECUTED && this.saveConfigHandler != null) this.saveConfigHandler.save();
 
         if (this.timerHandler != null) this.timerHandler.shutdown();
