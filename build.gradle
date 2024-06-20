@@ -46,7 +46,7 @@ dependencies {
     implementation 'org.javassist:javassist:3.27.0-GA'
 
     // GuiBuilder
-    implementation 'dev.triumphteam:triumph-gui:3.1.7'
+    implementation 'dev.triumphteam:triumph-gui:3.1.10'
 
     // Apache Commons IO
     implementation 'commons-io:commons-io:2.16.1'
@@ -65,7 +65,7 @@ shadowJar {
         include dependency("aopalliance:aopalliance:1.0")
         include dependency("org.reflections:reflections:0.9.12")
         include dependency('org.javassist:javassist')
-        include dependency('dev.triumphteam:triumph-gui:3.1.7')
+        include dependency('dev.triumphteam:triumph-gui:3.1.10')
         include dependency('org.json:json:20240303')
     }
 
