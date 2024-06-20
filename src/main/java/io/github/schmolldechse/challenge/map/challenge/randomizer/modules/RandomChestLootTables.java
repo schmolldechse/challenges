@@ -1,9 +1,9 @@
 package io.github.schmolldechse.challenge.map.challenge.randomizer.modules;
 
-import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.challenge.map.challenge.randomizer.RandomizerChallenge;
 import io.github.schmolldechse.challenge.module.Module;
 import io.github.schmolldechse.config.document.Document;
+import io.github.schmolldechse.misc.item.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -44,7 +44,7 @@ public class RandomChestLootTables extends Module<RandomizerChallenge> implement
         return ItemBuilder.from(Material.CHEST)
                 .name(this.getDisplayName())
                 .lore(this.getDescription())
-                .pdc(persistentDataContainer -> persistentDataContainer.set(this.key, PersistentDataType.STRING, this.getIdentifierName()))
+                .persistentDataContainer(persistentDataContainer -> persistentDataContainer.set(this.key, PersistentDataType.STRING, this.getIdentifierName()))
                 .build();
     }
 

@@ -1,8 +1,8 @@
 package io.github.schmolldechse.challenge.map.world;
 
-import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.challenge.Challenge;
 import io.github.schmolldechse.challenge.Identification;
+import io.github.schmolldechse.misc.item.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -35,7 +35,7 @@ public class HardcoreSetting extends Challenge implements Listener {
         return ItemBuilder.from(Material.GOLDEN_APPLE)
                 .name(this.getDisplayName())
                 .lore(this.getDescription())
-                .pdc(persistentDataContainer -> persistentDataContainer.set(this.key, PersistentDataType.STRING, this.getIdentifierName()))
+                .persistentDataContainer(persistentDataContainer -> persistentDataContainer.set(this.key, PersistentDataType.STRING, this.getIdentifierName()))
                 .build();
     }
 

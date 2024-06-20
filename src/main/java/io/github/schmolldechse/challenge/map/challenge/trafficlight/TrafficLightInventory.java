@@ -1,9 +1,9 @@
 package io.github.schmolldechse.challenge.map.challenge.trafficlight;
 
-import dev.triumphteam.gui.builder.item.ItemBuilder;
 import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import io.github.schmolldechse.Plugin;
+import io.github.schmolldechse.misc.item.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;

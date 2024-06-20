@@ -1,10 +1,10 @@
 package io.github.schmolldechse.challenge.map.challenge.trafficlight;
 
 import com.google.inject.Inject;
-import dev.triumphteam.gui.builder.item.ItemBuilder;
 import io.github.schmolldechse.challenge.Challenge;
 import io.github.schmolldechse.challenge.Identification;
 import io.github.schmolldechse.config.document.Document;
+import io.github.schmolldechse.misc.item.ItemBuilder;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -57,7 +57,7 @@ public class TrafficLightChallenge extends Challenge implements Listener {
         return ItemBuilder.from(Material.GREEN_CONCRETE)
                 .name(this.getDisplayName())
                 .lore(this.getDescription())
-                .pdc(persistentDataContainer -> persistentDataContainer.set(this.key, PersistentDataType.STRING, this.getIdentifierName()))
+                .persistentDataContainer(persistentDataContainer -> persistentDataContainer.set(this.key, PersistentDataType.STRING, this.getIdentifierName()))
                 .build();
     }
 
