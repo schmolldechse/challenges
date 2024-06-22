@@ -18,7 +18,7 @@ public class TimerHandler {
 
     public int time, elapsed;
     public boolean reverse;
-    public boolean isStarted = false;
+    public boolean isRunning = false;
 
     private ScheduledExecutorService timerService;
     private final ScheduledExecutorService actionbarService;
@@ -38,18 +38,16 @@ public class TimerHandler {
             offset += 0.05D;
             if (offset > 1.0) offset -= 2.0D;
 
-            Duration duration = Duration.ofSeconds(time);
-            String timeFormatted = this.format(duration);
+            String timeFormatted = this.isPaused() ? "Timer pausiert" :  this.format(Duration.ofSeconds(this.time));
 
-            @NotNull Component display = miniMessage.deserialize("<gradient:#707CF4:#F658CF:" + offset + "><b>" + (isPaused() ? "Timer pausiert" : timeFormatted));
+            @NotNull Component display = this.miniMessage.deserialize("<gradient:#707CF4:#F658CF:" + offset + "><b>" + timeFormatted);
             Bukkit.getOnlinePlayers().forEach(player -> player.sendActionBar(display));
-        }, 0, 50, TimeUnit.MILLISECONDS); // 2s animation
+        }, 0, 100, TimeUnit.MILLISECONDS);
     }
 
     public void start() {
-        if (this.isStarted) return;
-
-        this.isStarted = true;
+        if (this.isRunning) return;
+        this.isRunning = true;
 
         this.plugin.challengeHandler.registeredChallenges.values().stream()
                 .filter(Challenge::isActive)
@@ -66,7 +64,7 @@ public class TimerHandler {
 
     public void pause() {
         this.timerService.shutdownNow();
-        this.isStarted = false;
+        this.isRunning = false;
 
         this.plugin.challengeHandler.registeredChallenges.values().stream()
                 .filter(Challenge::isActive)
@@ -74,7 +72,7 @@ public class TimerHandler {
     }
 
     public boolean isPaused() {
-        return !this.isStarted || this.timerService.isShutdown();
+        return !this.isRunning || this.timerService.isShutdown();
     }
 
     public void update(int seconds) {

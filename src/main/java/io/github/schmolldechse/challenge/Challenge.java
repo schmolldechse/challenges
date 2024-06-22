@@ -187,8 +187,15 @@ public abstract class Challenge implements Listener {
                 .forEach(Module::deactivate);
     }
 
+    /**
+     * Called when the challenge is being paused
+     */
     public void onPause() { }
 
+    /**
+     * Called when the challenge is being resumed
+
+     */
     public void onResume() { }
 
     public boolean isActive() { return this.active; }

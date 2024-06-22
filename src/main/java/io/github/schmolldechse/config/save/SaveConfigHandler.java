@@ -81,7 +81,7 @@ public class SaveConfigHandler {
 
         document.append("challenges", this.plugin.challengeHandler.registeredChallenges.entrySet().stream()
                 .filter(entry -> entry.getValue().isActive())
-                .map(entry -> new Document().append(entry.getKey(), entry.getValue().save()))
+                .map(entry -> new Document(entry.getKey(), entry.getValue().save()))
                 .toList());
 
         document.save(this.path.toPath());

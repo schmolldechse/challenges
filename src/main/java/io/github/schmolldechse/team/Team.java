@@ -1,9 +1,12 @@
 package io.github.schmolldechse.team;
 
 import io.github.schmolldechse.config.document.Document;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class Team {
@@ -41,6 +44,13 @@ public class Team {
 
     public void removeMember(UUID uuid) {
         this.uuids.remove(uuid);
+    }
+
+    public void sendMessage(Component component) {
+        this.uuids.forEach(uuid -> {
+            Optional.ofNullable(Bukkit.getPlayer(uuid))
+                    .ifPresent(player -> player.sendMessage(component));
+        });
     }
 
     public Document save() {
