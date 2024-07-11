@@ -59,7 +59,11 @@ public class TimerCommand {
                                                             String time = StringArgumentType.getString(source, "time");
                                                             if (time == null) return 0;
 
-                                                            this.plugin.timerHandler.update((int) convert(time));
+                                                            int converted = (int) convert(time);
+                                                            this.plugin.timerHandler.update(converted);
+                                                            Component component = Component.text(this.plugin.timerHandler.format(Duration.ofSeconds(converted)));
+
+                                                            source.getSource().getExecutor().sendMessage(Component.text("Timer set to ", NamedTextColor.GREEN).append(component));
                                                             return 1;
                                                         }
                                                 )

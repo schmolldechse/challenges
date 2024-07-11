@@ -23,8 +23,6 @@ public class TimerHandler {
     private ScheduledExecutorService timerService;
     private final ScheduledExecutorService actionbarService;
 
-    private final MiniMessage miniMessage = MiniMessage.miniMessage();
-
     private double offset = 0.0D;
 
     private final Plugin plugin;
@@ -38,9 +36,9 @@ public class TimerHandler {
             offset += 0.05D;
             if (offset > 1.0) offset -= 2.0D;
 
-            String timeFormatted = this.isPaused() ? "Timer pausiert" :  this.format(Duration.ofSeconds(this.time));
+            String timeFormatted = this.isPaused() ? "Timer pausiert" : this.format(Duration.ofSeconds(this.time));
 
-            @NotNull Component display = this.miniMessage.deserialize("<gradient:#707CF4:#F658CF:" + offset + "><b>" + timeFormatted);
+            @NotNull Component display = MiniMessage.miniMessage().deserialize("<gradient:#707CF4:#F658CF:" + offset + "><b>" + timeFormatted);
             Bukkit.getOnlinePlayers().forEach(player -> player.sendActionBar(display));
         }, 0, 100, TimeUnit.MILLISECONDS);
     }
