@@ -41,14 +41,14 @@ public class ResetCommand {
                 .executes((source) -> {
                     this.prepare();
                     this.plugin.DELETE_EXECUTED = true;
-                    this.executeRestart();
+                    Bukkit.shutdown();
                     return 1;
                 })
                 .then(
                         Commands.literal("-copy")
                                 .executes((source) -> {
                                     this.prepare();
-                                    this.executeRestart();
+                                    Bukkit.shutdown();
                                     return 1;
                                 })
                 );
@@ -72,17 +72,6 @@ public class ResetCommand {
             this.plugin.getLogger().info("Wrote world names to reset cache file");
         } catch (IOException exception) {
             this.plugin.getLogger().severe("Failed to create reset cache file");
-        }
-    }
-
-    private void executeRestart() {
-        switch (this.plugin.RESET_TYPE) {
-            case "STOP":
-                Bukkit.shutdown();
-                break;
-            case "RESTART":
-                Bukkit.spigot().restart();
-                break;
         }
     }
 }
