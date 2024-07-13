@@ -26,7 +26,7 @@ public class ResetCommand {
      * When specified, it copies the current {@link io.github.schmolldechse.challenge.ChallengeHandler} settings
      *
      * /reset
-     * /reset -c | -copy
+     * /reset copy
      */
 
     private final Plugin plugin;
@@ -45,7 +45,7 @@ public class ResetCommand {
                     return 1;
                 })
                 .then(
-                        Commands.literal("-copy")
+                        Commands.literal("copy")
                                 .executes((source) -> {
                                     this.prepare();
                                     Bukkit.shutdown();

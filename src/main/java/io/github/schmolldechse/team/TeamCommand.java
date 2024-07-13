@@ -19,8 +19,8 @@ public class TeamCommand {
 
     /**
      * /team clear
-     * /team -c | -create <name>
-     * /team -d | -delete <name>
+     * /team create <name>
+     * /team delete <name>
      * /team <name> add <player>
      * /team <name> remove <player>
      */
@@ -29,13 +29,18 @@ public class TeamCommand {
 
     public TeamCommand(Commands commands) {
         this.plugin = JavaPlugin.getPlugin(Plugin.class);
-        this.register(commands);
-    }
 
-    private void register(Commands commands) {
         final LiteralArgumentBuilder<CommandSourceStack> teamBuilder = Commands.literal("team")
                 .then(
-                        Commands.literal("-create")
+                        Commands.literal("clear")
+                                .executes((source) -> {
+                                    this.plugin.teamHandler.getRegisteredTeams().clear();
+                                    source.getSource().getExecutor().sendMessage(Component.text("All teams cleared", NamedTextColor.GREEN));
+                                    return 1;
+                                })
+                )
+                .then(
+                        Commands.literal("create")
                                 .then(Commands.argument("name", StringArgumentType.word())
                                         .executes((source) -> {
                                             String name = StringArgumentType.getString(source, "name");
@@ -53,7 +58,7 @@ public class TeamCommand {
                                 )
                 )
                 .then(
-                        Commands.literal("-delete")
+                        Commands.literal("delete")
                                 .then(Commands.argument("name", StringArgumentType.word())
                                         .executes((source) -> {
                                             String name = StringArgumentType.getString(source, "name");
@@ -79,7 +84,7 @@ public class TeamCommand {
                                                 .then(Commands.argument("player", ArgumentTypes.player())
                                                         .executes((source) -> {
                                                             Team team = source.getArgument("team", Team.class);
-                                                            Player player = source.getArgument("player", PlayerSelectorArgumentResolver.class).resolve(source.getSource()).get(0);
+                                                            Player player = source.getArgument("player", PlayerSelectorArgumentResolver.class).resolve(source.getSource()).getFirst();
 
                                                             if (this.plugin.teamHandler.inTeam(player)) {
                                                                 source.getSource().getExecutor().sendMessage(Component.text("(!) Player " + player.getName() + " is already in a team", NamedTextColor.RED));
@@ -97,7 +102,7 @@ public class TeamCommand {
                                                 .then(Commands.argument("player", ArgumentTypes.player())
                                                         .executes((source) -> {
                                                             Team team = source.getArgument("team", Team.class);
-                                                            Player player = source.getArgument("player", PlayerSelectorArgumentResolver.class).resolve(source.getSource()).get(0);
+                                                            Player player = source.getArgument("player", PlayerSelectorArgumentResolver.class).resolve(source.getSource()).getFirst();
 
                                                             if (!this.plugin.teamHandler.inTeam(player)) {
                                                                 source.getSource().getExecutor().sendMessage(Component.text("(!) Player " + player.getName() + " is not in a team", NamedTextColor.RED));
