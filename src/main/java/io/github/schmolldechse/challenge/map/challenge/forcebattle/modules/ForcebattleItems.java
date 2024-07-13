@@ -33,6 +33,7 @@ public class ForcebattleItems extends ForcebattleModule implements Listener {
                 .filter(Material::isItem)
                 .filter(material -> !this.challenge.excludedMaterials.contains(material))
                 .filter(material -> !material.name().endsWith("_SPAWN_EGG"))
+                // Items that are not obtainable in survival 
                 .filter(material -> material != Material.DEBUG_STICK)
                 .filter(material -> material != Material.WRITTEN_BOOK)
                 .filter(material -> material != Material.COMMAND_BLOCK)
@@ -47,6 +48,10 @@ public class ForcebattleItems extends ForcebattleModule implements Listener {
                 .filter(material -> material != Material.SPAWNER)
                 .filter(material -> material != Material.BEDROCK)
                 .filter(material -> material != Material.LIGHT)
+                .filter(material -> material != Material.REINFORCED_DEEPSLATE)
+                .filter(material -> material != Material.JIGSAW)
+                .filter(material -> material != Material.BUDDING_AMETHYST)
+                .filter(material -> material != Material.DRAGON_EGG)
                 .toList();
     }
 
