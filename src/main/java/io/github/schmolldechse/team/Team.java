@@ -2,24 +2,25 @@ package io.github.schmolldechse.team;
 
 import io.github.schmolldechse.config.document.Document;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class Team {
 
     private String name;
     private final List<UUID> uuids;
-    private Document document;
+
+    private final Map<Class<?>, Object> extensions;
 
     public Team(String name) {
         this.name = name;
-
         this.uuids = new ArrayList<>();
-        this.document = new Document();
+        this.extensions = new HashMap<>();
     }
 
     public String getName() {
@@ -46,6 +47,18 @@ public class Team {
         this.uuids.remove(uuid);
     }
 
+    public <T> void addExtension(@NotNull Class<?> type, @NotNull T extension) {
+        this.extensions.put(type, extension);
+    }
+
+    public <T> Optional<T> getExtension(@NotNull Class<T> type) {
+        return Optional.ofNullable(type.cast(this.extensions.get(type)));
+    }
+
+    public void removeExtension(@NotNull Class<?> type) {
+        this.extensions.remove(type);
+    }
+
     public void sendMessage(Component component) {
         this.uuids.forEach(uuid -> {
             Optional.ofNullable(Bukkit.getPlayer(uuid))
@@ -54,16 +67,38 @@ public class Team {
     }
 
     public Document save() {
-        return new Document("name", this.name)
-                .append("uuids", this.uuids)
-                .append("document", this.document);
-    }
+        Document document = new Document("name", this.name)
+                .append("uuids", this.uuids);
 
-    public void setDocument(Document document) {
-        this.document = document;
-    }
+        List<Document> extensionList = new ArrayList<>();
+        this.extensions.forEach((type, extensionObject) -> {
+            if (!(extensionObject instanceof Extension)) return;
 
-    public Document getDocument() {
+            Extension extension = (Extension) extensionObject;
+            Document extensionDocument = new Document("name", extension.name())
+                    .append("data", extension.save());
+            extensionList.add(extensionDocument);
+        });
+        document.append("extensions", extensionList);
+
         return document;
+    }
+
+    public Component members() {
+        List<String> names = this.uuids.stream()
+                .map(Bukkit::getOfflinePlayer)
+                .map(OfflinePlayer::getName)
+                .toList();
+
+        return Component.text(String.join(", ", names), NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false);
+    }
+
+    @Override
+    public String toString() {
+        return "Team{" +
+                "name='" + this.name + '\'' +
+                ", uuids=" + this.uuids +
+                ", extensions=" + this.extensions +
+                '}';
     }
 }

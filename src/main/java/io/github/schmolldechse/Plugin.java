@@ -6,6 +6,8 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import io.github.schmolldechse.challenge.ChallengeHandler;
+import io.github.schmolldechse.challenge.map.challenge.forcebattle.commands.ResultCommand;
+import io.github.schmolldechse.challenge.map.challenge.forcebattle.commands.SkipCommand;
 import io.github.schmolldechse.commands.ResetCommand;
 import io.github.schmolldechse.commands.SetupCommand;
 import io.github.schmolldechse.commands.TimerCommand;
@@ -78,6 +80,8 @@ public final class Plugin extends JavaPlugin {
             new SetupCommand(commands);
             new TimerCommand(commands);
             new TeamCommand(commands);
+            new SkipCommand(commands);
+            new ResultCommand(commands);
         });
 
         new PlayerMoveListener();

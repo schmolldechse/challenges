@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.inject.Inject;
 import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.challenge.Challenge;
+import io.github.schmolldechse.challenge.map.challenge.forcebattle.team.ForcebattleExtension;
 import io.github.schmolldechse.config.document.Document;
 import io.github.schmolldechse.team.Team;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -40,8 +41,21 @@ public class SaveConfigHandler {
                 Document teamDocument = new Document(element.getAsJsonObject());
 
                 Team team = new Team(teamDocument.getString("name"));
-                team.setDocument(teamDocument.getDocument("document"));
                 teamDocument.getArray("uuids").forEach(uuidElement -> team.addMember(UUID.fromString(uuidElement.getAsString())));
+
+                if (teamDocument.contains("extensions")) {
+                    JsonArray extensions = teamDocument.getArray("extensions");
+                    extensions.forEach(extensionElement -> {
+                        Document extensionDocument = new Document(extensionElement.getAsJsonObject());
+
+                        String name = extensionDocument.getString("name");
+                        Document data = extensionDocument.getDocument("data");
+
+                        if ("extension_forcebattle".equals(name)) {
+                            team.addExtension(ForcebattleExtension.class, ForcebattleExtension.fromDocument(data));
+                        }
+                    });
+                }
 
                 this.plugin.teamHandler.register(team);
             });

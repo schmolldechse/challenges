@@ -125,7 +125,7 @@ public abstract class Challenge implements Listener {
 
         Bukkit.broadcast(Component.text("Die Challenge wurde geschafft", NamedTextColor.GREEN));
         Bukkit.broadcast(Component.empty());
-        Bukkit.broadcast(Component.text("Zeit" + (this.plugin.timerHandler.reverse ? " übrig" : "") + ":", NamedTextColor.GREEN).append(Component.text(timeFormatted).decoration(TextDecoration.ITALIC, true)));
+        Bukkit.broadcast(Component.text("Zeit" + (this.plugin.timerHandler.reverse ? " übrig" : "") + ": ", NamedTextColor.GREEN).append(Component.text(timeFormatted).decoration(TextDecoration.ITALIC, true)));
     }
 
     protected void fail() {
