@@ -387,6 +387,7 @@ public class ForcebattleChallenge extends Challenge {
             stand.setBasePlate(false);
             stand.setGravity(false);
             stand.setInvulnerable(true);
+            stand.setCollidable(false);
         });
         player.addPassenger(armorStand);
 
