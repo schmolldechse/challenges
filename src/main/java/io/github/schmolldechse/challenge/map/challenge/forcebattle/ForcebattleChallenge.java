@@ -28,6 +28,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Transformation;
@@ -114,6 +115,7 @@ public class ForcebattleChallenge extends Challenge {
         PlayerJoinEvent.getHandlerList().unregister(this);
         PlayerQuitEvent.getHandlerList().unregister(this);
         PlayerDeathEvent.getHandlerList().unregister(this);
+        PlayerRespawnEvent.getHandlerList().unregister(this);
 
         this.plugin.teamHandler.getRegisteredTeams().forEach(team -> {
             ForcebattleExtension extension = team.getExtension(ForcebattleExtension.class).orElse(null);
@@ -124,15 +126,7 @@ public class ForcebattleChallenge extends Challenge {
                 if (player == null) return;
 
                 player.hideBossBar(extension.getBossBar());
-
-                if (!player.getPersistentDataContainer().has(this.itemDisplayKey)) return;
-                int entityId = player.getPersistentDataContainer().get(this.itemDisplayKey, PersistentDataType.INTEGER);
-
-                player.getWorld().getEntitiesByClass(ItemDisplay.class).stream()
-                        .filter(itemDisplay -> itemDisplay.getEntityId() == entityId)
-                        .findFirst()
-                        .ifPresent(ItemDisplay::remove);
-                player.getPersistentDataContainer().remove(this.itemDisplayKey);
+                this.removeItemDisplay(team);
             });
         });
 
@@ -297,15 +291,7 @@ public class ForcebattleChallenge extends Challenge {
     @EventHandler
     public void execute(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-
-        if (!player.getPersistentDataContainer().has(this.itemDisplayKey)) return;
-        int entityId = player.getPersistentDataContainer().get(this.itemDisplayKey, PersistentDataType.INTEGER);
-
-        player.getWorld().getEntitiesByClass(ItemDisplay.class).stream()
-                .filter(itemDisplay -> itemDisplay.getEntityId() == entityId)
-                .findFirst()
-                .ifPresent(Entity::remove);
-        player.getPersistentDataContainer().remove(this.itemDisplayKey);
+        this.removeItemDisplay(player);
     }
 
     @EventHandler
@@ -355,7 +341,6 @@ public class ForcebattleChallenge extends Challenge {
 
         Optional<ForcebattleExtension> extension = team.getExtension(ForcebattleExtension.class);
         if (extension.isEmpty()) return;
-        player.showBossBar(extension.get().getBossBar());
 
         if (player.getPersistentDataContainer().has(this.itemDisplayKey)) return;
         this.spawnItemDisplay(player, extension.get());
@@ -373,14 +358,22 @@ public class ForcebattleChallenge extends Challenge {
         Optional<ForcebattleExtension> extension = team.getExtension(ForcebattleExtension.class);
         if (extension.isEmpty()) return;
 
-        if (!player.getPersistentDataContainer().has(this.itemDisplayKey)) return;
-        int entityId = player.getPersistentDataContainer().get(this.itemDisplayKey, PersistentDataType.INTEGER);
+        this.removeItemDisplay(player);
+    }
 
-        player.getWorld().getEntitiesByClass(ItemDisplay.class).stream()
-                .filter(itemDisplay -> itemDisplay.getEntityId() == entityId)
-                .findFirst()
-                .ifPresent(Entity::remove);
+    @EventHandler
+    public void execute(PlayerRespawnEvent event) {
+        if (this.plugin.timerHandler.isPaused()) return;
 
+        Player player = event.getPlayer();
+
+        if (!this.plugin.teamHandler.inTeam(player)) return;
+        Team team = this.plugin.teamHandler.team(player);
+
+        Optional<ForcebattleExtension> extension = team.getExtension(ForcebattleExtension.class);
+        if (extension.isEmpty()) return;
+
+        if (player.getPersistentDataContainer().has(this.itemDisplayKey)) return;
         this.spawnItemDisplay(player, extension.get());
     }
 
@@ -437,6 +430,20 @@ public class ForcebattleChallenge extends Challenge {
         });
     }
 
+    private void removeItemDisplay(Player player) {
+        if (!player.getPersistentDataContainer().has(this.itemDisplayKey)) return;
+        int entityId = player.getPersistentDataContainer().get(this.itemDisplayKey, PersistentDataType.INTEGER);
+
+        player.getWorld().getEntitiesByClass(ArmorStand.class).stream()
+                .filter(armorStand -> armorStand.getEntityId() == entityId)
+                .findFirst()
+                .ifPresent(entity -> {
+                    entity.getPassengers().forEach(Entity::remove);
+                    entity.remove();
+                });
+        player.getPersistentDataContainer().remove(this.itemDisplayKey);
+    }
+
     private void removeItemDisplay(Team team) {
         ForcebattleExtension extension = team.getExtension(ForcebattleExtension.class).orElse(null);
         if (extension == null) return;
@@ -445,13 +452,7 @@ public class ForcebattleChallenge extends Challenge {
             Player player = Bukkit.getPlayer(uuid);
             if (player == null) return;
 
-            if (!player.getPersistentDataContainer().has(this.itemDisplayKey)) return;
-            int entityId = player.getPersistentDataContainer().get(this.itemDisplayKey, PersistentDataType.INTEGER);
-
-            player.getWorld().getEntitiesByClass(ArmorStand.class).stream()
-                    .filter(armorStand -> armorStand.getEntityId() == entityId)
-                    .findFirst()
-                    .ifPresent(Entity::remove);
+            this.removeItemDisplay(player);
         });
     }
 }
