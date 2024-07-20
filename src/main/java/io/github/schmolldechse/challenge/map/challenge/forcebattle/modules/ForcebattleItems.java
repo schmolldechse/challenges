@@ -52,6 +52,7 @@ public class ForcebattleItems extends ForcebattleModule implements Listener {
                 .filter(material -> material != Material.JIGSAW)
                 .filter(material -> material != Material.BUDDING_AMETHYST)
                 .filter(material -> material != Material.DRAGON_EGG)
+                .filter(material -> material != Material.KNOWLEDGE_BOOK)
                 .toList();
     }
 
