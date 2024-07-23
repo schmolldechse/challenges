@@ -377,6 +377,7 @@ public class ForcebattleChallenge extends Challenge {
 
         Optional<ForcebattleExtension> extension = team.getExtension(ForcebattleExtension.class);
         if (extension.isEmpty()) return;
+        player.showBossBar(extension.get().getBossBar());
 
         if (player.getPersistentDataContainer().has(this.itemDisplayKey)) return;
         this.spawnItemDisplay(player, extension.get());
