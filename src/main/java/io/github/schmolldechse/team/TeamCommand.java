@@ -86,10 +86,8 @@ public class TeamCommand {
                                                             Team team = source.getArgument("team", Team.class);
                                                             Player player = source.getArgument("player", PlayerSelectorArgumentResolver.class).resolve(source.getSource()).getFirst();
 
-                                                            if (this.plugin.teamHandler.inTeam(player)) {
-                                                                source.getSource().getExecutor().sendMessage(Component.text("(!) Player " + player.getName() + " is already in a team", NamedTextColor.RED));
-                                                                return 0;
-                                                            }
+                                                            if (this.plugin.teamHandler.inTeam(player))
+                                                                this.plugin.teamHandler.team(player).removeMember(player.getUniqueId());
 
                                                             team.addMember(player.getUniqueId());
                                                             source.getSource().getExecutor().sendMessage(Component.text("Player " + player.getName() + " added to team " + team.getName(), NamedTextColor.GREEN));
