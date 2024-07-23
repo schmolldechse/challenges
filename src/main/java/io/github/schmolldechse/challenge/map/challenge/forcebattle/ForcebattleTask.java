@@ -79,10 +79,9 @@ public class ForcebattleTask implements Cloneable {
             case ADVANCEMENT -> translatableKey = "advancements." + this.getKey().getKey().replace("/", ".") + ".title";
             case ENTITY -> translatableKey = "entity.minecraft." + this.getKey().getKey();
             case ITEM -> {
-                if (Material.matchMaterial(this.getKey().getKey()).isBlock())
-                    translatableKey = "block.minecraft." + this.getKey().getKey();
-                else if (Material.matchMaterial(this.getKey().getKey()).isItem())
-                    translatableKey = "item.minecraft." + this.getKey().getKey();
+                Material material = Material.matchMaterial(this.getKey().getKey());
+                if (material.isBlock()) translatableKey = "block.minecraft." + this.getKey().getKey();
+                else if (material.isItem()) translatableKey = "item.minecraft." + this.getKey().getKey();
                 else translatableKey = "NaN";
             }
             default -> translatableKey = "NaN";
@@ -96,15 +95,67 @@ public class ForcebattleTask implements Cloneable {
         if (this.getTaskType() == ForcebattleTask.TaskType.ADVANCEMENT)
             component = component.hoverEvent(HoverEvent.showText(Component.translatable(this.translatable().replace(".title", ".description"))));
 
+        if (this.getTaskType() == TaskType.ITEM) {
+            if (this.isDisc(Material.matchMaterial(this.getKey().getKey())) || this.isBannerPattern(Material.matchMaterial(this.getKey().getKey())))
+                component = component.append(Component.empty())
+                        .append(Component.text("(", NamedTextColor.GOLD))
+                        .append(Component.translatable(this.translatable() + ".desc", NamedTextColor.GOLD))
+                        .append(Component.text(")", NamedTextColor.GOLD));
+            else if (this.isTemplate(Material.matchMaterial(this.getKey().getKey())))
+                component = component.append(Component.empty())
+                        .append(Component.text("(", NamedTextColor.GOLD))
+                        .append(Component.text(this.templateName(Material.matchMaterial(this.getKey().getKey())), NamedTextColor.GOLD))
+                        .append(Component.text(")", NamedTextColor.GOLD));
+        }
+
         return component;
+    }
+
+    private boolean isDisc(Material material) {
+        return material.name().contains("DISC");
+    }
+
+    private boolean isTemplate(Material material) {
+        return material.name().endsWith("TEMPLATE");
+    }
+
+    private boolean isBannerPattern(Material material) {
+        return material.name().endsWith("BANNER_PATTERN");
+    }
+
+    private String templateName(Material material) {
+        String name;
+        switch (material) {
+            case NETHERITE_UPGRADE_SMITHING_TEMPLATE -> name =  "Netherite Upgrade";
+            case SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Sentry Armor Trim";
+            case DUNE_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Dune Armor Trim";
+            case COAST_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Coast Armor Trim";
+            case WILD_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Wild Armor Trim";
+            case WARD_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Ward Armor Trim";
+            case EYE_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Eye Armor Trim";
+            case VEX_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Vex Armor Trim";
+            case TIDE_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Tide Armor Trim";
+            case SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Snout Armor Trim";
+            case RIB_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Rib Armor Trim";
+            case SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Spire Armor Trim";
+            case WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Wayfinder Armor Trim";
+            case SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Shaper Armor Trim";
+            case SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Silence Armor Trim";
+            case RAISER_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Raiser Armor Trim";
+            case HOST_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Host Armor Trim";
+            case FLOW_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Flow Armor Trim";
+            case BOLT_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Bolt Armor Trim";
+            default -> name = "NaN";
+        }
+        return name;
     }
 
     @Override
     public String toString() {
         return "ForcebattleTask{" +
-                "key=" + key +
-                ", taskType=" + taskType +
-                ", finishedData=" + finishedData +
+                "key=" + this.key +
+                ", taskType=" + this.taskType +
+                ", finishedData=" + this.finishedData +
                 '}';
     }
 
