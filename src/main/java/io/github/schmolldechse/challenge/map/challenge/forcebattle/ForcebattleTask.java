@@ -90,7 +90,7 @@ public class ForcebattleTask implements Cloneable {
         return translatableKey;
     }
 
-    public Component translateFromKey() {
+    public Component component() {
         Component component = Component.empty().append(Component.translatable(this.translatable(), NamedTextColor.GOLD));
 
         if (this.getTaskType() == ForcebattleTask.TaskType.ADVANCEMENT)

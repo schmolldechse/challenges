@@ -1,7 +1,6 @@
 package io.github.schmolldechse.challenge.map.challenge.forcebattle;
 
 import com.google.gson.JsonArray;
-import io.github.schmolldechse.Plugin;
 import io.github.schmolldechse.challenge.Challenge;
 import io.github.schmolldechse.challenge.Identification;
 import io.github.schmolldechse.challenge.map.challenge.forcebattle.modules.ForcebattleAdvancements;
@@ -148,7 +147,20 @@ public class ForcebattleChallenge extends Challenge {
         this.plugin.timerHandler.setReverse(true);
 
         this.plugin.teamHandler.getRegisteredTeams().forEach(team -> {
-            if (team.getExtension(ForcebattleExtension.class).isPresent()) return;
+            Player leader = Bukkit.getPlayer(team.getUuids().getFirst());
+            if (team.getExtension(ForcebattleExtension.class).isPresent()) {
+                team.sendMessage(Component.text("Nächste Aufgabe: ", NamedTextColor.GRAY)
+                    .append(team.getExtension(ForcebattleExtension.class).get().getCurrentTask().component())
+                );
+
+                if (leader != null)
+                    this.plugin.scoreboardHandler.scoreboardTeam(leader)
+                            .suffix(Component.text(" [", NamedTextColor.GRAY)
+                                    .append(team.getExtension(ForcebattleExtension.class).get().getCurrentTask().component())
+                                    .append(Component.text("]", NamedTextColor.GRAY))
+                            );
+                return;
+            }
 
             ForcebattleExtension extension = new ForcebattleExtension(
                     List.of(),
@@ -157,8 +169,14 @@ public class ForcebattleChallenge extends Challenge {
             );
             team.addExtension(ForcebattleExtension.class, extension);
 
-            Player leader = Bukkit.getPlayer(team.getUuids().getFirst());
-            if (leader != null) leader.getInventory().addItem(this.skipItem);
+            if (leader != null) {
+                this.plugin.scoreboardHandler.scoreboardTeam(leader)
+                        .suffix(Component.text("[", NamedTextColor.GRAY)
+                                .append(extension.getCurrentTask().component())
+                                .append(Component.text("]", NamedTextColor.GRAY))
+                        );
+                leader.getInventory().addItem(this.skipItem);
+            }
 
             team.getUuids().forEach(uuid -> {
                 Player player = this.plugin.getServer().getPlayer(uuid);
@@ -169,7 +187,12 @@ public class ForcebattleChallenge extends Challenge {
                 if (player.getPersistentDataContainer().has(this.itemDisplayKey)) return;
                 this.spawnItemDisplay(player, extension);
             });
+
+            team.sendMessage(Component.text("Nächste Aufgabe: ", NamedTextColor.GRAY)
+                    .append(extension.getCurrentTask().component())
+            );
         });
+        this.plugin.scoreboardHandler.playerList();
 
         if (this.timerService == null || this.timerService.isShutdown())
             this.timerService = Executors.newSingleThreadScheduledExecutor();
@@ -227,6 +250,8 @@ public class ForcebattleChallenge extends Challenge {
     }
 
     public void nextTask(Team team, ForcebattleTask currentTask) {
+        Player leader = Bukkit.getPlayer(team.getUuids().getFirst());
+
         ForcebattleExtension extension = team.getExtension(ForcebattleExtension.class).orElse(null);
         if (extension == null) {
             team.sendMessage(Component.text("(!) Your team is not registered for the forcebattle challenge!", NamedTextColor.RED));
@@ -247,6 +272,11 @@ public class ForcebattleChallenge extends Challenge {
 
             this.removeItemDisplay(team);
 
+            if (leader != null) {
+                this.plugin.scoreboardHandler.scoreboardTeam(leader).suffix(Component.empty());
+                this.plugin.scoreboardHandler.playerList();
+            }
+
             this.plugin.getLogger().warning("No more tasks available for team " + team.getName());
             return;
         }
@@ -255,12 +285,18 @@ public class ForcebattleChallenge extends Challenge {
         this.updateItemDisplay(team);
 
         Component text = Component.text("Aufgabe ", NamedTextColor.GRAY)
-                .append(currentTask.translateFromKey())
+                .append(currentTask.component())
                 .append(Component.text(" geschafft", NamedTextColor.GREEN))
                 .appendNewline()
                 .append(Component.text("Nächste Aufgabe: ", NamedTextColor.GRAY))
-                .append(nextTask.translateFromKey());
+                .append(nextTask.component());
         team.sendMessage(text);
+
+        this.plugin.scoreboardHandler.scoreboardTeam(leader)
+                .suffix(Component.text(" [", NamedTextColor.GRAY)
+                        .append(nextTask.component())
+                        .append(Component.text("]", NamedTextColor.GRAY))
+                );
 
         this.moduleRegistry.getModules().stream()
                 .filter(Module::isActive)

@@ -17,6 +17,7 @@ import io.github.schmolldechse.listener.AsyncChatListener;
 import io.github.schmolldechse.listener.PlayerJoinListener;
 import io.github.schmolldechse.listener.PlayerMoveListener;
 import io.github.schmolldechse.listener.PlayerResourcePackStatusListener;
+import io.github.schmolldechse.misc.scoreboard.ScoreboardHandler;
 import io.github.schmolldechse.team.TeamCommand;
 import io.github.schmolldechse.team.TeamHandler;
 import io.github.schmolldechse.timer.TimerHandler;
@@ -35,10 +36,11 @@ import java.nio.file.Paths;
 
 public final class Plugin extends JavaPlugin {
 
-    @Inject public TimerHandler timerHandler;
-    @Inject public ChallengeHandler challengeHandler;
-    @Inject public SaveConfigHandler saveConfigHandler;
-    @Inject public TeamHandler teamHandler;
+    public @Inject TimerHandler timerHandler;
+    public @Inject ChallengeHandler challengeHandler;
+    public @Inject SaveConfigHandler saveConfigHandler;
+    public @Inject TeamHandler teamHandler;
+    public @Inject ScoreboardHandler scoreboardHandler;
 
     public boolean MOVEMENT_ALLOWED = true;
 
@@ -107,6 +109,8 @@ public final class Plugin extends JavaPlugin {
 
         if (this.timerHandler != null) this.timerHandler.shutdown();
         if (this.challengeHandler != null) this.challengeHandler.deactivate();
+
+        if (this.scoreboardHandler != null) this.scoreboardHandler.clear();
     }
 
     private void readConfig() {

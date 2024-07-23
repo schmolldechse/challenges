@@ -91,6 +91,8 @@ public class TeamCommand {
 
                                                             team.addMember(player.getUniqueId());
                                                             source.getSource().getExecutor().sendMessage(Component.text("Player " + player.getName() + " added to team " + team.getName(), NamedTextColor.GREEN));
+
+                                                            this.plugin.scoreboardHandler.playerList();
                                                             return 1;
                                                         })
                                                 )
@@ -109,6 +111,8 @@ public class TeamCommand {
 
                                                             team.removeMember(player.getUniqueId());
                                                             source.getSource().getExecutor().sendMessage(Component.text("Player " + player.getName() + " removed from team " + team.getName(), NamedTextColor.GREEN));
+
+                                                            this.plugin.scoreboardHandler.playerList();
                                                             return 1;
                                                         })
                                                 )
