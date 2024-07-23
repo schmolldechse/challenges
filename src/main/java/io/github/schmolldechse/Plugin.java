@@ -13,6 +13,7 @@ import io.github.schmolldechse.commands.SetupCommand;
 import io.github.schmolldechse.commands.TimerCommand;
 import io.github.schmolldechse.config.save.SaveConfigHandler;
 import io.github.schmolldechse.inventory.*;
+import io.github.schmolldechse.listener.AsyncChatListener;
 import io.github.schmolldechse.listener.PlayerJoinListener;
 import io.github.schmolldechse.listener.PlayerMoveListener;
 import io.github.schmolldechse.listener.PlayerResourcePackStatusListener;
@@ -84,6 +85,7 @@ public final class Plugin extends JavaPlugin {
             new ResultCommand(commands);
         });
 
+        new AsyncChatListener();
         new PlayerMoveListener();
         new PlayerJoinListener();
         new PlayerResourcePackStatusListener();
