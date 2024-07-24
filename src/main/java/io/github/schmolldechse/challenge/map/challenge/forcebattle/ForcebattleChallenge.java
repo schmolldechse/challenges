@@ -354,6 +354,8 @@ public class ForcebattleChallenge extends Challenge {
         ForcebattleTask currentTask = extension.getCurrentTask();
         if (currentTask == null) return;
 
+        event.getPlayer().getInventory().addItem(extension.getCurrentTask().toItemStack());
+
         currentTask.setFinishedData(new ForcebattleTask.FinishedData(
                 true,
                 this.plugin.timerHandler.elapsed,
@@ -362,7 +364,6 @@ public class ForcebattleChallenge extends Challenge {
         this.nextTask(team, currentTask);
 
         itemStack.setAmount(itemStack.getAmount() - 1);
-
         event.setUseInteractedBlock(Event.Result.DENY);
     }
 
