@@ -28,9 +28,15 @@ public class ForcebattleTask implements Cloneable {
     private final NamespacedKey key;
     private final TaskType taskType;
 
-    @Nullable
-    private FinishedData finishedData;
+    private @Nullable FinishedData finishedData;
 
+    /**
+     * Constructs a new ForcebattleTask
+     *
+     * @param key               The key representing the task
+     * @param taskType          The type of the task
+     * @param finishedData      {@link FinishedData} representing the finished state of the task
+     */
     public ForcebattleTask(NamespacedKey key, TaskType taskType, @Nullable FinishedData finishedData) {
         this.key = key;
         this.taskType = taskType;
@@ -74,19 +80,17 @@ public class ForcebattleTask implements Cloneable {
     }
 
     public String translatable() {
-        String translatableKey = "";
-        switch (this.getTaskType()) {
-            case ADVANCEMENT -> translatableKey = "advancements." + this.getKey().getKey().replace("/", ".") + ".title";
-            case ENTITY -> translatableKey = "entity.minecraft." + this.getKey().getKey();
+        return switch (this.getTaskType()) {
+            case ADVANCEMENT -> "advancements." + this.getKey().getKey().replace("/", ".") + ".title";
+            case ENTITY -> "entity.minecraft." + this.getKey().getKey();
             case ITEM -> {
                 Material material = Material.matchMaterial(this.getKey().getKey());
-                if (material.isBlock()) translatableKey = "block.minecraft." + this.getKey().getKey();
-                else if (material.isItem()) translatableKey = "item.minecraft." + this.getKey().getKey();
-                else translatableKey = "NaN";
+                if (material.isBlock()) yield "block.minecraft." + this.getKey().getKey();
+                else if (material.isItem()) yield "item.minecraft." + this.getKey().getKey();
+                else yield "NaN";
             }
-            default -> translatableKey = "NaN";
-        }
-        return translatableKey;
+            default -> "NaN";
+        };
     }
 
     public Component component() {
@@ -96,58 +100,56 @@ public class ForcebattleTask implements Cloneable {
             component = component.hoverEvent(HoverEvent.showText(Component.translatable(this.translatable().replace(".title", ".description"))));
 
         if (this.getTaskType() == TaskType.ITEM) {
-            if (this.isDisc(Material.matchMaterial(this.getKey().getKey())) || this.isBannerPattern(Material.matchMaterial(this.getKey().getKey())))
-                component = component.append(Component.empty())
+            if (this.isDisc() || this.isBannerPattern())
+                component = component.append(Component.space())
                         .append(Component.text("(", NamedTextColor.GOLD))
                         .append(Component.translatable(this.translatable() + ".desc", NamedTextColor.GOLD))
                         .append(Component.text(")", NamedTextColor.GOLD));
-            else if (this.isTemplate(Material.matchMaterial(this.getKey().getKey())))
-                component = component.append(Component.empty())
+            else if (this.isTemplate())
+                component = component.append(Component.space())
                         .append(Component.text("(", NamedTextColor.GOLD))
-                        .append(Component.text(this.templateName(Material.matchMaterial(this.getKey().getKey())), NamedTextColor.GOLD))
+                        .append(Component.text(this.templateName(), NamedTextColor.GOLD))
                         .append(Component.text(")", NamedTextColor.GOLD));
         }
 
         return component;
     }
 
-    private boolean isDisc(Material material) {
-        return material.name().contains("DISC");
+    public boolean isDisc() {
+        return Material.matchMaterial(this.getKey().getKey()).name().contains("DISC");
     }
 
-    private boolean isTemplate(Material material) {
-        return material.name().endsWith("TEMPLATE");
+    public boolean isTemplate() {
+        return Material.matchMaterial(this.getKey().getKey()).name().endsWith("TEMPLATE");
     }
 
-    private boolean isBannerPattern(Material material) {
-        return material.name().endsWith("BANNER_PATTERN");
+    public boolean isBannerPattern() {
+        return Material.matchMaterial(this.getKey().getKey()).name().endsWith("BANNER_PATTERN");
     }
 
-    private String templateName(Material material) {
-        String name;
-        switch (material) {
-            case NETHERITE_UPGRADE_SMITHING_TEMPLATE -> name =  "Netherite Upgrade";
-            case SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Sentry Armor Trim";
-            case DUNE_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Dune Armor Trim";
-            case COAST_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Coast Armor Trim";
-            case WILD_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Wild Armor Trim";
-            case WARD_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Ward Armor Trim";
-            case EYE_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Eye Armor Trim";
-            case VEX_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Vex Armor Trim";
-            case TIDE_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Tide Armor Trim";
-            case SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Snout Armor Trim";
-            case RIB_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Rib Armor Trim";
-            case SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Spire Armor Trim";
-            case WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Wayfinder Armor Trim";
-            case SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Shaper Armor Trim";
-            case SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Silence Armor Trim";
-            case RAISER_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Raiser Armor Trim";
-            case HOST_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Host Armor Trim";
-            case FLOW_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Flow Armor Trim";
-            case BOLT_ARMOR_TRIM_SMITHING_TEMPLATE -> name = "Bolt Armor Trim";
-            default -> name = "NaN";
-        }
-        return name;
+    public String templateName() {
+        return switch (Material.matchMaterial(this.getKey().getKey())) {
+            case NETHERITE_UPGRADE_SMITHING_TEMPLATE -> "Netherite Upgrade";
+            case SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE -> "Sentry Armor Trim";
+            case DUNE_ARMOR_TRIM_SMITHING_TEMPLATE -> "Dune Armor Trim";
+            case COAST_ARMOR_TRIM_SMITHING_TEMPLATE -> "Coast Armor Trim";
+            case WILD_ARMOR_TRIM_SMITHING_TEMPLATE -> "Wild Armor Trim";
+            case WARD_ARMOR_TRIM_SMITHING_TEMPLATE -> "Ward Armor Trim";
+            case EYE_ARMOR_TRIM_SMITHING_TEMPLATE -> "Eye Armor Trim";
+            case VEX_ARMOR_TRIM_SMITHING_TEMPLATE -> "Vex Armor Trim";
+            case TIDE_ARMOR_TRIM_SMITHING_TEMPLATE -> "Tide Armor Trim";
+            case SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE -> "Snout Armor Trim";
+            case RIB_ARMOR_TRIM_SMITHING_TEMPLATE -> "Rib Armor Trim";
+            case SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE -> "Spire Armor Trim";
+            case WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE -> "Wayfinder Armor Trim";
+            case SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE -> "Shaper Armor Trim";
+            case SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE -> "Silence Armor Trim";
+            case RAISER_ARMOR_TRIM_SMITHING_TEMPLATE -> "Raiser Armor Trim";
+            case HOST_ARMOR_TRIM_SMITHING_TEMPLATE -> "Host Armor Trim";
+            case FLOW_ARMOR_TRIM_SMITHING_TEMPLATE -> "Flow Armor Trim";
+            case BOLT_ARMOR_TRIM_SMITHING_TEMPLATE -> "Bolt Armor Trim";
+            default -> "NaN";
+        };
     }
 
     @Override
@@ -163,16 +165,10 @@ public class ForcebattleTask implements Cloneable {
     public ForcebattleTask clone() {
         try {
             ForcebattleTask cloned = (ForcebattleTask) super.clone();
-            if (this.finishedData != null)
-                cloned.finishedData = new FinishedData(
-                        this.finishedData.skipped,
-                        this.finishedData.finishedAfter,
-                        this.finishedData.finishedFrom
-                );
-
+            cloned.finishedData = this.finishedData != null ? this.finishedData.clone() : null;
             return cloned;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
+        } catch (CloneNotSupportedException exception) {
+            throw new AssertionError(exception);
         }
     }
 
