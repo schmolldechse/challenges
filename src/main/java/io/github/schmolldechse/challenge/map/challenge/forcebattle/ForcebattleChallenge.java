@@ -150,7 +150,7 @@ public class ForcebattleChallenge extends Challenge {
             Player leader = Bukkit.getPlayer(team.getUuids().getFirst());
             if (team.getExtension(ForcebattleExtension.class).isPresent()) {
                 team.sendMessage(Component.text("Nächste Aufgabe: ", NamedTextColor.GRAY)
-                    .append(team.getExtension(ForcebattleExtension.class).get().getCurrentTask().component())
+                        .append(team.getExtension(ForcebattleExtension.class).get().getCurrentTask().component())
                 );
 
                 if (leader != null)
@@ -204,7 +204,11 @@ public class ForcebattleChallenge extends Challenge {
                 ForcebattleExtension extension = team.getExtension(ForcebattleExtension.class).orElse(null);
                 if (extension == null) return;
 
-                String text = extension.getCurrentTask() == null ? "Aufgaben erledigt" : "<lang:" + extension.getCurrentTask().translatable() + ">";
+                String text = extension.getCurrentTask() == null
+                        ? "Aufgaben erledigt"
+                        : "<lang:" + extension.getCurrentTask().translatable() + ">"
+                        + (extension.getCurrentTask().isDisc() || extension.getCurrentTask().isBannerPattern() ? " (<lang:" + extension.getCurrentTask().translatable() + ".desc" + ">)"
+                        : (extension.getCurrentTask().isTemplate() ? " (" + extension.getCurrentTask().templateName() + ")" : ""));
 
                 @NotNull Component display = MiniMessage.miniMessage().deserialize("<gradient:#707CF4:#F658CF:" + offset + "><b>" + text);
                 extension.getBossBar().name(display);
