@@ -23,6 +23,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -110,22 +111,17 @@ public class ForcebattleChallenge extends Challenge {
 
     @Override
     public void onDeactivate() {
-        PlayerInteractEvent.getHandlerList().unregister(this);
-        PlayerJoinEvent.getHandlerList().unregister(this);
-        PlayerQuitEvent.getHandlerList().unregister(this);
-        PlayerDeathEvent.getHandlerList().unregister(this);
-        PlayerRespawnEvent.getHandlerList().unregister(this);
+        HandlerList.unregisterAll(this);
 
         this.plugin.teamHandler.getRegisteredTeams().forEach(team -> {
             ForcebattleExtension extension = team.getExtension(ForcebattleExtension.class).orElse(null);
             if (extension == null) return;
 
+            this.removeItemDisplay(team);
+
             team.getUuids().forEach(uuid -> {
                 Player player = this.plugin.getServer().getPlayer(uuid);
-                if (player == null) return;
-
-                player.hideBossBar(extension.getBossBar());
-                this.removeItemDisplay(team);
+                if (player != null) player.hideBossBar(extension.getBossBar());
             });
         });
 
@@ -147,6 +143,8 @@ public class ForcebattleChallenge extends Challenge {
         this.plugin.timerHandler.setReverse(true);
 
         this.plugin.teamHandler.getRegisteredTeams().forEach(team -> {
+            if (team.getUuids().isEmpty()) return;
+
             Player leader = Bukkit.getPlayer(team.getUuids().getFirst());
             if (team.getExtension(ForcebattleExtension.class).isPresent()) {
                 team.sendMessage(Component.text("Nächste Aufgabe: ", NamedTextColor.GRAY)
@@ -171,7 +169,7 @@ public class ForcebattleChallenge extends Challenge {
 
             if (leader != null) {
                 this.plugin.scoreboardHandler.scoreboardTeam(leader)
-                        .suffix(Component.text("[", NamedTextColor.GRAY)
+                        .suffix(Component.text(" [", NamedTextColor.GRAY)
                                 .append(extension.getCurrentTask().component())
                                 .append(Component.text("]", NamedTextColor.GRAY))
                         );
