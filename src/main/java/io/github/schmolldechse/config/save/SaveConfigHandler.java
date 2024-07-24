@@ -31,6 +31,7 @@ public class SaveConfigHandler {
         if (document.contains("timer")) {
             Document timer = document.getDocument("timer");
             this.plugin.timerHandler.time = timer.getInt("time");
+            this.plugin.timerHandler.elapsed = timer.getInt("elapsed");
             this.plugin.timerHandler.reverse = timer.getBoolean("reverse");
         }
 
@@ -85,6 +86,7 @@ public class SaveConfigHandler {
 
         document.append("timer", new Document()
                 .append("time", this.plugin.timerHandler.time)
+                .append("elapsed", this.plugin.timerHandler.elapsed)
                 .append("reverse", this.plugin.timerHandler.reverse)
         );
 
